@@ -272,7 +272,7 @@
 
 <header class="hero">
   <div class="hero-inner">
-    <div class="eyebrow">Michael's Family Travel Services · Prepared from your research spreadsheets</div>
+    <div class="eyebrow">Michael's Family Travel Services</div>
     <h1>Scandinavia 2027 — Build Your Trip Estimate</h1>
     <p class="sub">Family of 5, flying from Houston. We fly <em>into</em> Stockholm and <em>home from</em> Lapland — using two different cities like this is called an "open-jaw" trip, and it saves backtracking. From Stockholm you sail to Helsinki, then take an overnight train up to Lapland. Pick a flight, a hotel in each city, your overnight ferry and train, and turn meals &amp; activities up or down — the running total on the right updates instantly.</p>
     <div class="hero-meta">
@@ -341,7 +341,7 @@ const DATA = {
   flights: [
     {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Lowest price','b-value']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'The lowest-priced option. Standard seats are tight for a tall adult on the 9–10 hour overnight flight, but fine for the short hops.', dur:'Out 13h 35m · home 22h 35m'},
     {id:'econ-fra',  cabin:'Economy',          name:'Economy · via Frankfurt', total:6575, pp:1315, badges:[['Earns United','b-star']], route:'IAH→ARN via Frankfurt (Lufthansa/United)', desc:'Routes through Frankfurt on Lufthansa/United and earns United miles.', dur:'Out 12h 45m · home 22h 35m'},
-    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'The value pick — roomier seats on both long ocean flights (where legroom matters most), standard seats on the short hops. Routes through London.', dur:'Out 13h 35m · home 22h 35m'},
+    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London',  total:9959,  pp:1992, badges:[['Lowest PE price','b-value']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'The value pick — roomier seats on both long ocean flights (where legroom matters most), standard seats on the short hops. Routes through London.', dur:'Out 13h 35m · home 22h 35m'},
     {id:'pe-dfw',    cabin:'Premium Economy',  name:'Premium Economy · return via Dallas', total:12366, pp:2473, badges:[['Kid-friendly','b-value']], route:'Out via London; home RVN 9:10 AM via HEL→DFW→IAH', desc:'A civilized 9:10 AM departure for the trip home instead of a 5:20 AM one, and no long London layover — routing home through Dallas.', dur:'Out 13h 35m · home 18h 14m'},
     {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · via Frankfurt', total:17160, pp:3432, badges:[['Earns United','b-star']], route:'IAH→ARN via Frankfurt (Lufthansa/United), 1 stop', desc:'Roomier seats routed through Frankfurt on Lufthansa/United; earns United miles.', dur:'Out 12h 45m · home 22h 35m'},
     {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'Seats that fold flat into a bed for real sleep, plus airport lounge access. The top comfort option.', dur:'Out 13h 35m · home 22h 35m'},
@@ -427,40 +427,45 @@ const DATA = {
 };
 
 /* ---------- Flight segment detail ----------
-   Published flight-by-flight times for the recommended value fare (from the
-   Live Quotes tab). Outbound departs the trip's start date; the return runs on
-   the "fly home" date, which shifts automatically with your itinerary length. */
-// Legs carry exact local dep/arr times. dd/ad = calendar-day offset from the
-// segment anchor (outbound = departure date; return = fly-home date).
+   Every flight uses the same timetable format. Via-London routings carry the
+   exact published times (only the cabin on the ocean legs changes). Via-Frankfurt
+   routings share the same layout; their exact times publish closer to travel, so
+   they're marked "TBD". The return leg from Lapland is Finnair for everyone, so
+   the researched return applies to all routings. Outbound anchors to the trip's
+   start date; the return runs on the fly-home date. */
+const _lonOut = cab => ({title:'Outbound', arrive:'Land Stockholm · 12:25 PM', total:'13h 35m total travel time', legs:[
+  {f:'BA 194', from:'Houston (IAH)', to:'London (LHR)', dep:'3:50 PM', dd:0, arr:'6:50 AM', ad:1, dur:'9h 00m', ac:'Boeing 787', cab:cab, note:'Overnight red-eye — the leg the kids sleep through'},
+  {lay:'London Heathrow (LHR)', dur:'2h 00m'},
+  {f:'BA 776', from:'London (LHR)', to:'Stockholm (ARN)', dep:'8:50 AM', dd:1, arr:'12:25 PM', ad:1, dur:'2h 35m', ac:'Airbus A319', cab:'Economy'},
+]});
+const _lonRet = cab => ({title:'Return', arrive:'Land Houston · 8:55 PM', total:'22h 35m total travel time', legs:[
+  {f:'AY 540', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'5:20 AM', dd:0, arr:'6:35 AM', ad:0, dur:'1h 15m', ac:'Airbus A321', cab:'Economy', note:'Very early start'},
+  {lay:'Helsinki (HEL)', dur:'1h 15m'},
+  {f:'AY 1331', from:'Helsinki (HEL)', to:'London (LHR)', dep:'7:50 AM', dd:0, arr:'9:10 AM', ad:0, dur:'3h 20m', ac:'Airbus A350', cab:'Economy'},
+  {lay:'London Heathrow (LHR)', dur:'6h 15m · long'},
+  {f:'BA 197', from:'London (LHR)', to:'Houston (IAH)', dep:'3:25 PM', dd:0, arr:'8:55 PM', ad:0, dur:'10h 30m', ac:'Boeing 787', cab:cab},
+]});
+const _fraOut = cab => ({title:'Outbound', arrive:'Land Stockholm · ~11:15 AM', total:'12h 45m total travel time', approx:true, legs:[
+  {f:'LH 441', from:'Houston (IAH)', to:'Frankfurt (FRA)', dep:'3:35 PM', dd:0, arr:'8:15 AM', ad:1, dur:'9h 40m', ac:'Boeing 747-400', cab:cab, note:'Overnight red-eye across the ocean'},
+  {lay:'Frankfurt (FRA)', dur:'~1h 05m'},
+  {f:'LH · FRA→ARN', from:'Frankfurt (FRA)', to:'Stockholm (ARN)', dep:'~9:20 AM', dd:1, arr:'~11:15 AM', ad:1, dur:'2h 05m', ac:'Airbus A320', cab:'Economy'},
+], note:'Houston→Frankfurt is Lufthansa LH 441 (3:35 PM → 8:15 AM next day, verified). The Frankfurt→Stockholm connection time firms up at booking.'});
+const _dfwRet = {title:'Return · 9:10 AM start via Dallas', arrive:'Land Houston · 8:24 PM', total:'18h 14m total travel time', approx:true, legs:[
+  {f:'AY 543', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'9:10 AM', dd:0, arr:'10:25 AM', ad:0, dur:'~1h 15m', ac:'Airbus A321', cab:'Economy', note:'Later, civilized departure'},
+  {lay:'Helsinki (HEL)', dur:'~1h 30m'},
+  {f:'AY 5 (HEL→DFW)', from:'Helsinki (HEL)', to:'Dallas (DFW)', dep:'~12:00 PM', dd:0, arr:'~3:30 PM', ad:0, dur:'~10h 30m', ac:'Airbus A350', cab:'Premium Economy', note:'The ocean crossing — roomier seats'},
+  {lay:'Dallas Fort Worth (DFW)', dur:'~1h 45m'},
+  {f:'AA (DFW→IAH)', from:'Dallas (DFW)', to:'Houston (IAH)', dep:'~7:00 PM', dd:0, arr:'8:24 PM', ad:0, dur:'~1h 05m', ac:'domestic jet', cab:'Economy', note:'Quick hop home'},
+], note:'Endpoints (9:10 AM depart, 8:24 PM arrive) are from the fare research; connection times marked ~ are estimates that firm up when 2027 schedules load.'};
+
 const FLIGHT_SEGMENTS = {
-  'pe-lon':{
-    out:{title:'Outbound', arrive:'Land Stockholm · 12:25 PM', total:'13h 35m total', legs:[
-      {f:'BA 194', from:'Houston (IAH)', to:'London (LHR)', dep:'3:50 PM', dd:0, arr:'6:50 AM', ad:1, dur:'9h 00m', ac:'Boeing 787', cab:'Premium Economy', note:'Overnight red-eye — the leg the kids sleep through'},
-      {lay:'London Heathrow (LHR)', dur:'2h 00m'},
-      {f:'BA 776', from:'London (LHR)', to:'Stockholm (ARN)', dep:'8:50 AM', dd:1, arr:'12:25 PM', ad:1, dur:'2h 35m', ac:'Airbus A319', cab:'Economy'},
-    ]},
-    ret:{title:'Return', arrive:'Land Houston · 8:55 PM', total:'22h 35m total travel time', legs:[
-      {f:'AY 540', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'5:20 AM', dd:0, arr:'6:35 AM', ad:0, dur:'1h 15m', ac:'Airbus A321', cab:'Economy', note:'Very early start'},
-      {lay:'Helsinki (HEL)', dur:'1h 15m'},
-      {f:'AY 1331', from:'Helsinki (HEL)', to:'London (LHR)', dep:'7:50 AM', dd:0, arr:'9:10 AM', ad:0, dur:'3h 20m', ac:'Airbus A350', cab:'Economy'},
-      {lay:'London Heathrow (LHR)', dur:'6h 15m · long'},
-      {f:'BA 197', from:'London (LHR)', to:'Houston (IAH)', dep:'3:25 PM', dd:0, arr:'8:55 PM', ad:0, dur:'10h 30m', ac:'Boeing 787', cab:'Premium Economy'},
-    ]},
-  },
-  'pe-dfw':{
-    out:{title:'Outbound', arrive:'Land Stockholm · 12:25 PM', total:'13h 35m total', legs:[
-      {f:'BA 194', from:'Houston (IAH)', to:'London (LHR)', dep:'3:50 PM', dd:0, arr:'6:50 AM', ad:1, dur:'9h 00m', ac:'Boeing 787', cab:'Premium Economy', note:'Overnight red-eye — the leg the kids sleep through'},
-      {lay:'London Heathrow (LHR)', dur:'2h 00m'},
-      {f:'BA 776', from:'London (LHR)', to:'Stockholm (ARN)', dep:'8:50 AM', dd:1, arr:'12:25 PM', ad:1, dur:'2h 35m', ac:'Airbus A319', cab:'Economy'},
-    ]},
-    ret:{title:'Return · 9:10 AM start via Dallas', arrive:'Land Houston · 8:24 PM', total:'18h 14m total travel time', approx:true, legs:[
-      {f:'AY 543', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'9:10 AM', dd:0, arr:'10:25 AM', ad:0, dur:'~1h 15m', ac:'Airbus A321', cab:'Economy', note:'Later, civilized departure'},
-      {lay:'Helsinki (HEL)', dur:'~1h 30m'},
-      {f:'AY 5 (HEL→DFW)', from:'Helsinki (HEL)', to:'Dallas (DFW)', dep:'~12:00 PM', dd:0, arr:'~3:30 PM', ad:0, dur:'~10h 30m', ac:'Airbus A350', cab:'Premium Economy', note:'The ocean crossing — roomier seats'},
-      {lay:'Dallas Fort Worth (DFW)', dur:'~1h 45m'},
-      {f:'AA (DFW→IAH)', from:'Dallas (DFW)', to:'Houston (IAH)', dep:'~7:00 PM', dd:0, arr:'8:24 PM', ad:0, dur:'~1h 05m', ac:'domestic jet', cab:'Economy', note:'Quick hop home'},
-    ], note:'Endpoints (9:10 AM depart, 8:24 PM arrive) are from the fare research; connection times marked ~ are estimates that firm up when 2027 schedules load.'},
-  },
+  'econ-lon':{ out:_lonOut('Economy'),          ret:_lonRet('Economy') },
+  'econ-fra':{ out:_fraOut('Economy'),          ret:_lonRet('Economy') },
+  'pe-lon':  { out:_lonOut('Premium Economy'),  ret:_lonRet('Premium Economy') },
+  'pe-dfw':  { out:_lonOut('Premium Economy'),  ret:_dfwRet },
+  'pe-fra':  { out:_fraOut('Premium Economy'),  ret:_lonRet('Premium Economy') },
+  'biz-lon': { out:_lonOut('Business'),         ret:_lonRet('Business') },
+  'biz-sa':  { out:_fraOut('Business'),         ret:_lonRet('Business') },
 };
 
 /* ---------- Steps definition ---------- */
@@ -481,7 +486,7 @@ const NIGHTS = {
   short:       {Stockholm:3, Helsinki:2, Rovaniemi:3},  // quick trip · 12 days
 };
 const NIGHT_MIN=1, NIGHT_MAX=8;
-const PRESET_LABEL={recommended:'Recommended', lapland6:'Max Lapland', short:'Short', custom:'Custom'};
+const PRESET_LABEL={recommended:'Lapland 5', lapland6:'Lapland 6', short:'Short', custom:'Custom'};
 function detectPreset(){
   for(const k in NIGHTS){ const p=NIGHTS[k];
     if(p.Stockholm===state.nights.Stockholm && p.Helsinki===state.nights.Helsinki && p.Rovaniemi===state.nights.Rovaniemi) return k; }
@@ -603,8 +608,8 @@ function renderTripBar(){
     <div class="tl-left">
       <span class="tl-lbl">Trip length</span>
       <div class="tl-toggle">
-        <button class="${state.tripLength==='recommended'?'on':''}" data-len="recommended">Recommended · 3·3·5</button>
-        <button class="${state.tripLength==='lapland6'?'on':''}" data-len="lapland6">Max Lapland · 3·3·6</button>
+        <button class="${state.tripLength==='recommended'?'on':''}" data-len="recommended">Lapland 5 · 3·3·5</button>
+        <button class="${state.tripLength==='lapland6'?'on':''}" data-len="lapland6">Lapland 6 · 3·3·6</button>
         <button class="${state.tripLength==='short'?'on':''}" data-len="short">Short · 3·2·3</button>
         ${state.tripLength==='custom'?'<button class="on" disabled>Custom</button>':''}
       </div>
@@ -653,17 +658,18 @@ function renderFlightDetail(flight){
   const it=computeItinerary();
   if(!seg){
     box.innerHTML=`<div class="fd-head">✈️ Flight-by-flight</div>
-      <div class="fd-sum"><b>${flight.route}</b>${flight.dur?` · ${flight.dur}`:''}. Full segment times are published for the recommended <b>Premium Economy via London</b> fare; exact times for this option firm up closer to travel.</div>`;
+      <div class="fd-sum"><b>${flight.route}</b>${flight.dur?` · ${flight.dur}`:''}. Exact segment times for this routing publish closer to travel.</div>`;
     return box;
   }
   const legRows = (legs, anchor) => legs.map(l=>{
     if(l.lay) return `<div class="fd-lay">↕ ${l.dur} layover · ${l.lay}</div>`;
     const dd=fmtD(addDays(anchor, l.dd||0)), ad=fmtD(addDays(anchor, l.ad||0));
+    const bar=[l.dur?`<span class="fd-dur">${l.dur}</span>`:'', l.ac||'', `<span class="fd-cab">${l.cab}</span>`].filter(Boolean).join(' · ');
     return `<div class="fd-leg">
       <div class="fd-flt">${l.f}</div>
       <div class="fd-mid">
         <div class="fd-pt"><span class="fd-time">${l.dep}</span><span class="fd-when">${dd}</span><span class="fd-place">depart ${l.from}</span></div>
-        <div class="fd-bar"><span class="fd-dur">${l.dur}</span> · ${l.ac} · <span class="fd-cab">${l.cab}</span></div>
+        <div class="fd-bar">${bar}</div>
         <div class="fd-pt"><span class="fd-time">${l.arr}</span><span class="fd-when">${ad}</span><span class="fd-place">arrive ${l.to}</span></div>
         ${l.note?`<div class="fd-note">${l.note}</div>`:''}
       </div>
@@ -674,7 +680,8 @@ function renderFlightDetail(flight){
       <div class="fd-daytop"><span class="fd-daylbl">${seg.out.title} · overnight</span><span class="fd-daydate">${fmtD(it.departHou)} → ${fmtD(it.stkIn)}</span></div>
       ${legRows(seg.out.legs, it.departHou)}
       <div class="fd-arrive">${seg.out.arrive} · ${seg.out.total}</div>
-      <div class="fd-footnote">🌙 Red-eye — land Stockholm midday the next day (fly east, lose a day).</div>
+      <div class="fd-footnote">🌙 Overnight red-eye — you fly through the night and land the next day (fly east, lose a day).</div>
+      ${seg.out.note?`<div class="fd-footnote">${seg.out.note}</div>`:''}
     </div>
     <div class="fd-day">
       <div class="fd-daytop"><span class="fd-daylbl">${seg.ret.title} · same-day</span><span class="fd-daydate">${fmtD(it.flyHome)}</span></div>
@@ -866,7 +873,7 @@ function renderSummary(){
 
   const presets=document.createElement('div'); presets.className='preset-row';
   presets.innerHTML='<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center;letter-spacing:.06em;">QUICK PRESETS:</span>';
-  [['💎 Premium build','premium'],['💰 Value build','value'],['⚖️ Balanced (recommended)','balanced']].forEach(([lbl,p])=>{
+  [['💎 Premium build','premium'],['💰 Value build','value'],['⚖️ Balanced build','balanced']].forEach(([lbl,p])=>{
     const b=document.createElement('button'); b.className='preset'; b.textContent=lbl;
     b.onclick=()=>{applyPreset(p); render();};
     presets.appendChild(b);
