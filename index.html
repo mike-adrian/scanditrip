@@ -339,13 +339,13 @@
    ========================================================= */
 const DATA = {
   flights: [
-    {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Best value','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The cheapest way there. Standard seats are tight for a tall adult on the 9–10 hour overnight flight, but fine for the short hops.', dur:'13h 35m out'},
-    {id:'econ-fra',  cabin:'Economy',          name:'Economy · Star Alliance via Frankfurt', total:6575, pp:1315, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United)', desc:'The quickest trip (about 12h45) and earns United miles. About $1,584 more than the London route.', dur:'12h 45m'},
-    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The value pick — roomier seats on both long ocean flights (where legroom matters most), standard seats on the short hops. About $7,200 cheaper than the Frankfurt route.', dur:'13h 35m out'},
-    {id:'pe-dfw',    cabin:'Premium Economy',  name:'Premium Economy · humane return via Dallas', total:12366, pp:2473, badges:[['Kid-friendly','b-value']], route:'Out via London; home RVN 9:10 AM via HEL→DFW→IAH', desc:'Skips the brutal 5:20 AM return. ~$400/pp more for a civilized wake-up, a 4-hr-shorter day, no 6-hr London layover.', dur:'18h 14m home'},
-    {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · Star Alliance via Frankfurt', total:17160, pp:3432, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United), 1 stop', desc:'The quickest trip in the roomier seats and earns United miles — but about $7,200 more than the London route.', dur:'12h 45m'},
-    {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Seats that fold flat into a bed, plus airport lounge access. The comfort splurge — about 3× the Premium Economy price.', dur:'13h 35m out'},
-    {id:'biz-sa',    cabin:'Business',         name:'Business · Star Alliance',        total:32629, pp:6526, badges:[['Lie-flat','b-premium'],['Earns United','b-star']], route:'IAH→ARN via FRA (AC/Lufthansa)', desc:'Flat-bed seats that also earn United miles; about $2,243 more than the London route.', dur:''},
+    {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Lowest price','b-value']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'The lowest-priced option. Standard seats are tight for a tall adult on the 9–10 hour overnight flight, but fine for the short hops.', dur:'Out 13h 35m · home 22h 35m'},
+    {id:'econ-fra',  cabin:'Economy',          name:'Economy · via Frankfurt', total:6575, pp:1315, badges:[['Earns United','b-star']], route:'IAH→ARN via Frankfurt (Lufthansa/United)', desc:'Routes through Frankfurt on Lufthansa/United and earns United miles.', dur:'Out 12h 45m · home 22h 35m'},
+    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'The value pick — roomier seats on both long ocean flights (where legroom matters most), standard seats on the short hops. Routes through London.', dur:'Out 13h 35m · home 22h 35m'},
+    {id:'pe-dfw',    cabin:'Premium Economy',  name:'Premium Economy · return via Dallas', total:12366, pp:2473, badges:[['Kid-friendly','b-value']], route:'Out via London; home RVN 9:10 AM via HEL→DFW→IAH', desc:'A civilized 9:10 AM departure for the trip home instead of a 5:20 AM one, and no long London layover — routing home through Dallas.', dur:'Out 13h 35m · home 18h 14m'},
+    {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · via Frankfurt', total:17160, pp:3432, badges:[['Earns United','b-star']], route:'IAH→ARN via Frankfurt (Lufthansa/United), 1 stop', desc:'Roomier seats routed through Frankfurt on Lufthansa/United; earns United miles.', dur:'Out 12h 45m · home 22h 35m'},
+    {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via London (BA/AA/Finnair), 1 stop', desc:'Seats that fold flat into a bed for real sleep, plus airport lounge access. The top comfort option.', dur:'Out 13h 35m · home 22h 35m'},
+    {id:'biz-sa',    cabin:'Business',         name:'Business · via Frankfurt',        total:32629, pp:6526, badges:[['Lie-flat','b-premium'],['Earns United','b-star']], route:'IAH→ARN via Frankfurt (AC/Lufthansa)', desc:'Flat-bed seats routed through Frankfurt that also earn United miles.', dur:'Out 12h 45m · home 22h 35m'},
   ],
 
   hotels:{
@@ -439,7 +439,7 @@ const FLIGHT_SEGMENTS = {
       {lay:'London Heathrow (LHR)', dur:'2h 00m'},
       {f:'BA 776', from:'London (LHR)', to:'Stockholm (ARN)', dep:'8:50 AM', dd:1, arr:'12:25 PM', ad:1, dur:'2h 35m', ac:'Airbus A319', cab:'Economy'},
     ]},
-    ret:{title:'Return', arrive:'Land Houston · 8:55 PM', total:'22h 35m total — long day', legs:[
+    ret:{title:'Return', arrive:'Land Houston · 8:55 PM', total:'22h 35m total travel time', legs:[
       {f:'AY 540', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'5:20 AM', dd:0, arr:'6:35 AM', ad:0, dur:'1h 15m', ac:'Airbus A321', cab:'Economy', note:'Very early start'},
       {lay:'Helsinki (HEL)', dur:'1h 15m'},
       {f:'AY 1331', from:'Helsinki (HEL)', to:'London (LHR)', dep:'7:50 AM', dd:0, arr:'9:10 AM', ad:0, dur:'3h 20m', ac:'Airbus A350', cab:'Economy'},
@@ -453,8 +453,8 @@ const FLIGHT_SEGMENTS = {
       {lay:'London Heathrow (LHR)', dur:'2h 00m'},
       {f:'BA 776', from:'London (LHR)', to:'Stockholm (ARN)', dep:'8:50 AM', dd:1, arr:'12:25 PM', ad:1, dur:'2h 35m', ac:'Airbus A319', cab:'Economy'},
     ]},
-    ret:{title:'Return · humane 9:10 AM start via Dallas', arrive:'Land Houston · 8:24 PM', total:'18h 14m total — 4 hrs shorter', approx:true, legs:[
-      {f:'AY 543', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'9:10 AM', dd:0, arr:'10:25 AM', ad:0, dur:'~1h 15m', ac:'Airbus A321', cab:'Economy', note:'Civilized wake-up vs the 5:20 AM'},
+    ret:{title:'Return · 9:10 AM start via Dallas', arrive:'Land Houston · 8:24 PM', total:'18h 14m total travel time', approx:true, legs:[
+      {f:'AY 543', from:'Rovaniemi (RVN)', to:'Helsinki (HEL)', dep:'9:10 AM', dd:0, arr:'10:25 AM', ad:0, dur:'~1h 15m', ac:'Airbus A321', cab:'Economy', note:'Later, civilized departure'},
       {lay:'Helsinki (HEL)', dur:'~1h 30m'},
       {f:'AY 5 (HEL→DFW)', from:'Helsinki (HEL)', to:'Dallas (DFW)', dep:'~12:00 PM', dd:0, arr:'~3:30 PM', ad:0, dur:'~10h 30m', ac:'Airbus A350', cab:'Premium Economy', note:'The ocean crossing — roomier seats'},
       {lay:'Dallas Fort Worth (DFW)', dur:'~1h 45m'},
