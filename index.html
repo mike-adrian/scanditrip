@@ -508,7 +508,7 @@ const nightsKeyForFood = fk => fk==='Lapland' ? 'Rovaniemi' : fk;
 // init activities
 function initActivities(){
   for(const seg in DATA.activities){
-    DATA.activities[seg].forEach(a=>{ state.act[a.id] = a.def; });
+    DATA.activities[seg].forEach(a=>{ state.act[a.id] = false; });  // nothing selected by default
   }
 }
 initActivities();
@@ -748,13 +748,16 @@ function renderDepartToggle(){
 
 function renderTierToggle(segKey, foodKey){
   const f=DATA.food[foodKey];
+  const isEvent = foodKey==='Cruise' || foodKey==='Train';
+  const nts = isEvent ? 1 : state.nights[nightsKeyForFood(foodKey)];
+  const amtFor = tier => isEvent ? f[tier] : Math.round(f[tier]/f.nights*nts);
   const wrap=document.createElement('div'); wrap.className='subsec';
-  wrap.innerHTML=`<h3>🍽 Food tier · ${f.nights} ${f.nights===1?'day':'days'} of meals for 5</h3>`;
+  wrap.innerHTML=`<h3>🍽 Food tier · ${nts} ${nts===1?'day':'days'} of meals for 5</h3>`;
   const tg=document.createElement('div'); tg.className='tier-toggle';
-  [['reg','Regular',f.reg],['spl','Splurge',f.spl]].forEach(([v,lbl,amt])=>{
+  [['reg','Regular'],['spl','Splurge']].forEach(([v,lbl])=>{
     const b=document.createElement('button');
     b.className=state.foodTier[foodKey]===v?'on':'';
-    b.innerHTML=`${lbl} · ${money(amt)}`;
+    b.innerHTML=`${lbl} · ${money(amtFor(v))}`;
     b.onclick=()=>{state.foodTier[foodKey]=v; render();};
     tg.appendChild(b);
   });
@@ -919,13 +922,13 @@ function applyPreset(p){
     state.hotels={Stockholm:'sto-camper', Helsinki:'hel-clarion', Rovaniemi:'rov-sokos'};
     state.cruise='cru-std'; state.train='trn-std';
     for(const k in state.foodTier) state.foodTier[k]='reg';
-    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def;});
+    // activities left as-is — pick your own
   }else{ // balanced
     state.flight='pe-lon';
     state.hotels={Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'};
     state.cruise='cru-std'; state.train='trn-ens';
     for(const k in state.foodTier) state.foodTier[k]='reg';
-    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def;});
+    // activities left as-is — pick your own
   }
 }
 
@@ -983,7 +986,10 @@ document.getElementById('nextBtn').onclick=()=>go(1);
 document.getElementById('prevBtn').onclick=()=>go(-1);
 document.getElementById('mbNext').onclick=()=>go(1);
 document.getElementById('mbPrev').onclick=()=>go(-1);
-document.getElementById('resetBtn').onclick=()=>{setTripLength('recommended'); applyPreset('balanced'); state.step=0; render();};
+document.getElementById('resetBtn').onclick=()=>{
+  setTripLength('recommended'); applyPreset('balanced'); initActivities();  // clears activities to none
+  state.step=0; render();
+};
 document.getElementById('printBtn').onclick=()=>{state.step=STEPS.length-1; render(); setTimeout(()=>window.print(),350);};
 
 render();
