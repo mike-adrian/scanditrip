@@ -190,6 +190,60 @@
     font-size:13px; font-weight:700; cursor:pointer; color:var(--ink-soft);}
   .preset:hover{border-color:var(--brand); color:var(--brand-deep);}
   .disclaimer{font-size:11.5px; color:var(--muted); margin-top:18px; line-height:1.5;}
+  /* ---------- Trip length bar ---------- */
+  .tripbar{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:13px 16px; margin-bottom:16px; box-shadow:var(--shadow-sm);
+    display:flex; flex-wrap:wrap; align-items:center; gap:14px 20px; justify-content:space-between;}
+  .tl-left{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .tl-lbl{font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .tl-toggle{display:inline-flex; background:var(--frost); border-radius:11px; padding:4px; gap:4px;}
+  .tl-toggle button{border:0; background:transparent; padding:8px 15px; border-radius:8px; cursor:pointer;
+    font-size:13px; font-weight:700; color:var(--ink-soft);}
+  .tl-toggle button.on{background:#fff; color:var(--brand-deep); box-shadow:var(--shadow-sm);}
+  .tl-nights{display:flex; flex-wrap:wrap; align-items:center; gap:4px 7px;}
+  .nchip{background:var(--frost); border-radius:8px; padding:5px 10px; font-size:12.5px; color:var(--ink-soft); font-weight:600;}
+  .nchip b{color:var(--brand-deep);}
+  .nchip.cruise{background:#eef4ff; color:var(--muted);}
+  .nchip.total{background:var(--ink); color:#fff;}
+  .nchip.total b{color:#fff;}
+  .nsep{color:var(--muted); font-size:12px;}
+  .tl-note{flex-basis:100%; font-size:12px; color:var(--muted); margin-top:2px;}
+  @media(max-width:640px){ .tl-nights{font-size:11.5px;} .nsep{display:none;} }
+
+  /* ---------- Night stepper ---------- */
+  .nightctl{display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--frost);
+    border-radius:12px; padding:11px 15px; margin-bottom:16px;}
+  .nc-lbl{font-size:13.5px; font-weight:700; color:var(--ink);}
+  .nc-btn{width:32px; height:32px; border-radius:9px; border:1px solid #c3d4e8; background:#fff;
+    font-size:19px; font-weight:700; color:var(--brand-deep); cursor:pointer; line-height:1;}
+  .nc-btn:hover:not(:disabled){border-color:var(--brand); background:#f0f6ff;}
+  .nc-btn:disabled{opacity:.35; cursor:default;}
+  .nc-val{min-width:26px; text-align:center; font-size:18px; font-weight:800;}
+  .nc-hint{font-size:12px; font-weight:600; margin-left:auto;}
+
+  /* ---------- Flight detail ---------- */
+  .fdetail{margin-top:20px; background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:16px 18px; box-shadow:var(--shadow-sm);}
+  .fd-head{font-size:14px; font-weight:800; letter-spacing:-.01em; margin-bottom:12px;}
+  .fd-sum{font-size:13px; color:var(--ink-soft);}
+  .fd-day{border:1px solid var(--line-soft); border-radius:12px; padding:12px 13px; margin-bottom:12px; background:#fbfdff;}
+  .fd-daytop{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
+  .fd-daylbl{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--brand-deep);}
+  .fd-daydate{font-size:12.5px; font-weight:700; color:var(--ink-soft);}
+  .fd-leg{display:flex; gap:11px; padding:8px 0;}
+  .fd-flt{flex:0 0 auto; font-size:11.5px; font-weight:800; color:#fff; background:var(--brand);
+    border-radius:7px; padding:4px 8px; height:fit-content; min-width:56px; text-align:center;}
+  .fd-mid{min-width:0;}
+  .fd-route{font-size:13.5px; font-weight:700;}
+  .fd-times{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  .fd-times b{color:var(--ink);}
+  .fd-cab{color:var(--brand-deep); font-weight:700;}
+  .fd-note{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .fd-lay{font-size:12px; color:var(--muted); font-weight:600; padding:4px 0 4px 8px;
+    border-left:2px dashed #cdd9e8; margin:2px 0 2px 26px;}
+  .fd-arrive{font-size:12.5px; font-weight:700; color:var(--green); margin-top:6px; padding-top:8px; border-top:1px solid var(--line-soft);}
+  .fd-footnote{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5;}
+
   .hide{display:none !important;}
 </style>
 </head>
@@ -199,12 +253,12 @@
   <div class="hero-inner">
     <div class="eyebrow">Michael's Family Travel Services · Prepared from your research spreadsheets</div>
     <h1>Scandinavia 2027 — Build Your Trip Estimate</h1>
-    <p class="sub">Family of 5 · open-jaw Houston ⇄ Stockholm → Helsinki → Lapland · Sat Mar 6 – Sat Mar 20, 2027. Pick a flight cabin, a hotel in each city, your overnight transport, and dial food &amp; activities up or down — the total updates live.</p>
+    <p class="sub">Family of 5, flying from Houston. We fly <em>into</em> Stockholm and <em>home from</em> Lapland — using two different cities like this is called an "open-jaw" trip, and it saves backtracking. From Stockholm you sail to Helsinki, then take an overnight train up to Lapland. Pick a flight, a hotel in each city, your overnight ferry and train, and turn meals &amp; activities up or down — the running total on the right updates instantly.</p>
     <div class="hero-meta">
       <span class="chip">3 adults + 2 kids (ages 8 &amp; 4)</span>
-      <span class="chip">~14 nights abroad</span>
-      <span class="chip">Stockholm 5n · Helsinki 3n · Rovaniemi 3n</span>
-      <span class="chip">All prices USD · live pulls Jul 22, 2026</span>
+      <span class="chip">About 2 weeks · 18 days max</span>
+      <span class="chip">Stockholm → Helsinki → Lapland</span>
+      <span class="chip">All prices in US dollars · checked Jul 2026</span>
     </div>
   </div>
 </header>
@@ -212,6 +266,7 @@
 <div class="wrap">
   <main class="panel">
     <div class="stepper" id="stepper"></div>
+    <div id="tripBar"></div>
     <div id="stepBody"></div>
     <div class="navrow">
       <button class="btn btn-ghost" id="prevBtn">← Back</button>
@@ -262,24 +317,24 @@
    ========================================================= */
 const DATA = {
   flights: [
-    {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Best value','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Cheapest routing. ~31" pitch — tight for a 6\'3" frame on a 9–10 hr overnight, but fine for the short hops.', dur:'13h 35m out'},
-    {id:'econ-fra',  cabin:'Economy',          name:'Economy · Star Alliance via Frankfurt', total:6575, pp:1315, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United)', desc:'Fastest routing (12h45) and lowest emissions; earns United miles. ~$1,584 more than via London.', dur:'12h 45m'},
-    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The value pick. PE on both ocean crossings (where legroom matters), economy on short hops. ~$7,200 cheaper than the Star Alliance PE.', dur:'13h 35m out'},
+    {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Best value','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The cheapest way there. Standard seats are tight for a tall adult on the 9–10 hour overnight flight, but fine for the short hops.', dur:'13h 35m out'},
+    {id:'econ-fra',  cabin:'Economy',          name:'Economy · Star Alliance via Frankfurt', total:6575, pp:1315, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United)', desc:'The quickest trip (about 12h45) and earns United miles. About $1,584 more than the London route.', dur:'12h 45m'},
+    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The value pick — roomier seats on both long ocean flights (where legroom matters most), standard seats on the short hops. About $7,200 cheaper than the Frankfurt route.', dur:'13h 35m out'},
     {id:'pe-dfw',    cabin:'Premium Economy',  name:'Premium Economy · humane return via Dallas', total:12366, pp:2473, badges:[['Kid-friendly','b-value']], route:'Out via London; home RVN 9:10 AM via HEL→DFW→IAH', desc:'Skips the brutal 5:20 AM return. ~$400/pp more for a civilized wake-up, a 4-hr-shorter day, no 6-hr London layover.', dur:'18h 14m home'},
-    {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · Star Alliance via Frankfurt', total:17160, pp:3432, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United), 1 stop', desc:'Fastest + lowest-emission PE and earns United status — but ~$7,200 over the via-London PE.', dur:'12h 45m'},
-    {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Proper lie-flat beds + lounge access. The comfort splurge — roughly 3× the PE fare.', dur:'13h 35m out'},
-    {id:'biz-sa',    cabin:'Business',         name:'Business · Star Alliance',        total:32629, pp:6526, badges:[['Lie-flat','b-premium'],['Earns United','b-star']], route:'IAH→ARN via FRA (AC/Lufthansa)', desc:'Lie-flat Business that earns United; ~$2,243 over the via-London Business.', dur:''},
+    {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · Star Alliance via Frankfurt', total:17160, pp:3432, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United), 1 stop', desc:'The quickest trip in the roomier seats and earns United miles — but about $7,200 more than the London route.', dur:'12h 45m'},
+    {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Seats that fold flat into a bed, plus airport lounge access. The comfort splurge — about 3× the Premium Economy price.', dur:'13h 35m out'},
+    {id:'biz-sa',    cabin:'Business',         name:'Business · Star Alliance',        total:32629, pp:6526, badges:[['Lie-flat','b-premium'],['Earns United','b-star']], route:'IAH→ARN via FRA (AC/Lufthansa)', desc:'Flat-bed seats that also earn United miles; about $2,243 more than the London route.', dur:''},
   ],
 
   hotels:{
     Stockholm:[
       {id:'sto-grand', name:'Grand Hôtel Stockholm', nightly:950, nights:5, total:4750, badges:[['Premium 5★','b-premium']], loc:'Waterfront, Blasieholmen · Old Town views', beds:'2 Deluxe rooms (queen + twins), extra bed for mom', desc:'Stockholm\'s grande dame (1874); spa, indoor pool, 5 restaurants; genuinely family-welcoming.', avail:'Verified available · book 2 rooms'},
-      {id:'sto-sheraton', name:'Sheraton Stockholm Hotel', nightly:500, nights:5, total:2500, badges:[['Marriott · Bonvoy','b-bonvoy']], loc:'City center, steps from Central Station', beds:'2 rooms: Classic King + Classic 2-Double (mom + 2 kids)', desc:'Full Bonvoy Platinum perks (upgrades, lounge, breakfast); connecting rooms; walk to Gamla Stan & trains.', avail:'Verified available · book direct on Marriott.com'},
+      {id:'sto-sheraton', name:'Sheraton Stockholm Hotel', nightly:500, nights:5, total:2500, badges:[['Marriott rewards','b-bonvoy']], loc:'City center, steps from Central Station', beds:'2 rooms: Classic King + Classic 2-Double (mom + 2 kids)', desc:'Full Marriott rewards perks with your status (room upgrades, lounge, free breakfast); connecting rooms; walk to the Old Town & trains.', avail:'Available · book direct on Marriott.com for the perks'},
       {id:'sto-camper', name:'Downtown Camper by Scandic', nightly:430, nights:5, total:2150, badges:[['Mid-range · top-rated','b-mid']], loc:'Brunkebergstorg, central', beds:'Deluxe King Suite fits all 5 (king + queen + 2 bunks)', desc:'Playful "urban basecamp" kids love; rooftop pool/sauna, gear to borrow. Best value.', avail:'Verified available'},
     ],
     Helsinki:[
-      {id:'hel-george', name:'Hotel St. George', nightly:650, nights:3, total:1950, badges:[['Marriott · Bonvoy','b-bonvoy'],['Design Hotels','b-premium']], loc:'City center by Old Church Park', beds:'2 studios (queen + king) · kids on rollaways (€60/bed)', desc:'5★ art-filled design hotel; spa, pool, acclaimed dining. King/queen only — least ideal for separate kid beds.', avail:'Verified available · Marriott.com'},
-      {id:'hel-u14', name:'Hotel U14, Autograph Collection', nightly:450, nights:3, total:1350, badges:[['Marriott · Bonvoy','b-bonvoy']], loc:'Near Market Square & harbor', beds:'2 rooms: King + Larger 2-Twin (kids own beds), mom rollaway', desc:'Arguably the best location in Helsinki; boutique Autograph, sauna, free bikes, family-friendly.', avail:'Verified available · Marriott.com'},
+      {id:'hel-george', name:'Hotel St. George', nightly:650, nights:3, total:1950, badges:[['Marriott rewards','b-bonvoy'],['Design Hotels','b-premium']], loc:'City center by Old Church Park', beds:'2 studios (queen + king) · kids on rollaways (€60/bed)', desc:'5★ art-filled design hotel; spa, pool, acclaimed dining. King/queen only — least ideal for separate kid beds.', avail:'Verified available · Marriott.com'},
+      {id:'hel-u14', name:'Hotel U14, Autograph Collection', nightly:450, nights:3, total:1350, badges:[['Marriott rewards','b-bonvoy']], loc:'Near Market Square & harbor', beds:'2 rooms: King + Larger 2-Twin (kids own beds), mom rollaway', desc:'Arguably the best location in Helsinki; boutique Autograph, sauna, free bikes, family-friendly.', avail:'Verified available · Marriott.com'},
       {id:'hel-clarion', name:'Clarion Hotel Helsinki', nightly:260, nights:3, total:780, badges:[['Mid-range · family fave','b-mid']], loc:'Jätkäsaari seafront', beds:'2 rooms (Twin + King/Queen) or a Family Room (sleeps 4–5)', desc:'Rooftop pool & sauna with sea views (huge kid win); modern family rooms; great value. ~15 min from center.', avail:'Verified available · best value'},
     ],
     Rovaniemi:[
@@ -297,8 +352,8 @@ const DATA = {
     {id:'cru-com', name:'Silja Line — Commodore class', total:650, badges:[['Premium','b-premium']], desc:'Top-deck Commodore cabins (20–25 m²), lounge access, breakfast & sparkling included, best views. 5 needs Commodore + standard cabin.', meta:'~17 hrs · Stockholm → Helsinki · replaces a hotel night'},
   ],
   train:[
-    {id:'trn-ens', name:"Santa's Claus Express — En-suite sleeper ×2–3", total:320, badges:[['Comfort','b-premium']], desc:'Two–three en-suite double cabins; lower cabins interconnect via a conductor-unlocked door — ideal for a family.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · replaces a hotel night'},
-    {id:'trn-std', name:"Santa's Claus Express — Standard sleeper", total:210, badges:[['Value','b-value']], desc:'Standard 2-berth sleeper cabins (shared corridor showers); cheapest berth option.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · replaces a hotel night'},
+    {id:'trn-ens', name:"Santa's Claus Express — Cabins with private bathroom ×2–3", total:320, badges:[['Comfort','b-premium']], desc:'Two–three sleeping cabins that each have their own toilet & shower; the lower cabins connect through a door the conductor unlocks, so the family can move between them. The comfortable choice.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · you sleep on board (no hotel that night)'},
+    {id:'trn-std', name:"Santa's Claus Express — Standard sleeping cabins", total:210, badges:[['Value','b-value']], desc:'Simple 2-bed sleeping cabins with showers shared down the corridor. The cheapest way to sleep on the train.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · you sleep on board (no hotel that night)'},
   ],
 
   /* Food subtotals (whole family) per segment, and activity line items.
@@ -348,6 +403,41 @@ const DATA = {
   },
 };
 
+/* ---------- Flight segment detail ----------
+   Published flight-by-flight times for the recommended value fare (from the
+   Live Quotes tab). Outbound departs the trip's start date; the return runs on
+   the "fly home" date, which shifts automatically with your itinerary length. */
+const FLIGHT_SEGMENTS = {
+  'pe-lon':{
+    out:{title:'Outbound', arrive:'Land Stockholm 12:25 PM', total:'13h 35m door-to-door', legs:[
+      {f:'BA 194', r:'Houston (IAH) → London (LHR)', dep:'3:50 PM', arr:'6:50 AM (next day)', ac:'Boeing 787', cab:'Premium Economy', note:'9h 00m · overnight — kids sleep this leg'},
+      {lay:'London Heathrow', dur:'2h 00m layover'},
+      {f:'BA 776', r:'London (LHR) → Stockholm (ARN)', dep:'8:50 AM', arr:'12:25 PM', ac:'Airbus A319', cab:'Economy', note:'2h 35m'},
+    ]},
+    ret:{title:'Return', arrive:'Land Houston 8:55 PM', total:'22h 35m — long day', legs:[
+      {f:'AY 540', r:'Rovaniemi (RVN) → Helsinki (HEL)', dep:'5:20 AM', arr:'6:35 AM', ac:'Airbus A321', cab:'Economy', note:'1h 15m · very early start'},
+      {lay:'Helsinki', dur:'1h 15m layover'},
+      {f:'AY 1331', r:'Helsinki (HEL) → London (LHR)', dep:'7:50 AM', arr:'9:10 AM', ac:'Airbus A350', cab:'Economy', note:'3h 20m'},
+      {lay:'London Heathrow', dur:'6h 15m layover · long'},
+      {f:'BA 197', r:'London (LHR) → Houston (IAH)', dep:'3:25 PM', arr:'8:55 PM', ac:'Boeing 787', cab:'Premium Economy', note:'10h 30m'},
+    ]},
+  },
+  'pe-dfw':{
+    out:{title:'Outbound', arrive:'Land Stockholm 12:25 PM', total:'13h 35m door-to-door', legs:[
+      {f:'BA 194', r:'Houston (IAH) → London (LHR)', dep:'3:50 PM', arr:'6:50 AM (next day)', ac:'Boeing 787', cab:'Premium Economy', note:'9h 00m · overnight — kids sleep this leg'},
+      {lay:'London Heathrow', dur:'2h 00m layover'},
+      {f:'BA 776', r:'London (LHR) → Stockholm (ARN)', dep:'8:50 AM', arr:'12:25 PM', ac:'Airbus A319', cab:'Economy', note:'2h 35m'},
+    ]},
+    ret:{title:'Return · humane 9:10 AM start via Dallas', arrive:'Land Houston 8:24 PM', total:'18h 14m — 4 hrs shorter', legs:[
+      {f:'AY 543', r:'Rovaniemi (RVN) → Helsinki (HEL)', dep:'9:10 AM', arr:'10:25 AM', ac:'Airbus A321', cab:'Economy', note:'later, civilized wake-up'},
+      {lay:'Helsinki', dur:'short layover'},
+      {f:'AY (HEL→DFW)', r:'Helsinki (HEL) → Dallas (DFW)', dep:'~12:30 PM', arr:'~afternoon', ac:'Airbus A350', cab:'Premium Economy', note:'the ocean crossing · roomier seats'},
+      {lay:'Dallas Fort Worth', dur:'short layover'},
+      {f:'AA (DFW→IAH)', r:'Dallas (DFW) → Houston (IAH)', dep:'evening', arr:'8:24 PM', ac:'domestic jet', cab:'Economy', note:'quick hop home'},
+    ], note:'No long London layover, and lands at your home airport. Exact flight numbers & mid-times firm up when 2027 schedules load — reconfirm at booking.'},
+  },
+};
+
 /* ---------- Steps definition ---------- */
 const STEPS = [
   {key:'flights',  label:'Flights',   type:'flights'},
@@ -359,8 +449,28 @@ const STEPS = [
   {key:'summary',  label:'Summary',   type:'summary'},
 ];
 
+/* ---------- Trip length presets (nights per location) ---------- */
+const NIGHTS = {
+  full:    {Stockholm:5, Helsinki:3, Rovaniemi:3},   // the original plan · 15 days
+  short:   {Stockholm:3, Helsinki:2, Rovaniemi:3},   // trim the cities, keep Lapland · 12 days
+  lapland: {Stockholm:3, Helsinki:3, Rovaniemi:6},   // shift Stockholm nights into Lapland · 16 days
+};
+const NIGHT_MIN=1, NIGHT_MAX=8;
+function detectPreset(){
+  for(const k in NIGHTS){ const p=NIGHTS[k];
+    if(p.Stockholm===state.nights.Stockholm && p.Helsinki===state.nights.Helsinki && p.Rovaniemi===state.nights.Rovaniemi) return k; }
+  return 'custom';
+}
+function bumpNights(city,delta){
+  state.nights[city]=Math.max(NIGHT_MIN,Math.min(NIGHT_MAX,state.nights[city]+delta));
+  state.tripLength=detectPreset();
+}
+
 /* ---------- State ---------- */
 const state = {
+  tripLength:'full',
+  departDay:'sat',   // 'fri' = leave Houston Fri Mar 5; 'sat' = Sat Mar 6 (both overnight red-eyes)
+  nights:{Stockholm:5, Helsinki:3, Rovaniemi:3},
   flight:'pe-lon',
   hotels:{Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'},
   cruise:'cru-std',
@@ -370,6 +480,13 @@ const state = {
   actTier:{},      // id -> 'reg'|'spl'
   step:0,
 };
+function setTripLength(len){
+  state.tripLength=len;
+  const p=NIGHTS[len];
+  state.nights={Stockholm:p.Stockholm, Helsinki:p.Helsinki, Rovaniemi:p.Rovaniemi};
+}
+function totalTripNights(){ return state.nights.Stockholm+state.nights.Helsinki+state.nights.Rovaniemi+2; }
+const nightsKeyForFood = fk => fk==='Lapland' ? 'Rovaniemi' : fk;
 // init activities
 function initActivities(){
   for(const seg in DATA.activities){
@@ -384,11 +501,39 @@ initActivities();
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 const foodKeyFor = key => key==='Rovaniemi' ? 'Lapland' : key;
 
+/* ---------- Itinerary dates ----------
+   Anchored to: depart Houston Sat Mar 6, 2027; arrive Stockholm Sun Mar 7.
+   Overnight cruise = the Stockholm check-out night; overnight train = the
+   Helsinki check-out night. Dates recompute whenever nights change and the
+   whole trip is kept inside the ~2-week / 18-day-max window. */
+const MAX_DAYS = 18;
+function computeItinerary(){
+  const n=state.nights;
+  const add=(dt,k)=>{const x=new Date(dt); x.setDate(x.getDate()+k); return x;};
+  const departHou = state.departDay==='fri' ? new Date(2027,2,5) : new Date(2027,2,6); // Fri Mar 5 or Sat Mar 6
+  const arrive = add(departHou,1);           // overnight red-eye lands next day
+  const stkIn=arrive,            stkOut=add(stkIn,n.Stockholm);
+  const helIn=add(stkOut,1),     helOut=add(helIn,n.Helsinki);   // +1 = the cruise night
+  const rovIn=add(helOut,1),     rovOut=add(rovIn,n.Rovaniemi);  // +1 = the train night
+  const flyHome=rovOut, buffer=add(flyHome,1);
+  const totalDays=Math.round((flyHome-departHou)/86400000)+1;
+  return {departHou,stkIn,stkOut,cruiseNight:stkOut,helIn,helOut,trainNight:helOut,rovIn,rovOut,flyHome,buffer,totalDays,
+          cityDates:{Stockholm:[stkIn,stkOut],Helsinki:[helIn,helOut],Rovaniemi:[rovIn,rovOut]}};
+}
+const fmtD = dt => dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
 /* ---------- Cost computation ---------- */
+// Food scales by the actual nights chosen. Cruise & train are single overnight
+// events (fixed). City food = per-night rate × nights, so food nights always
+// match hotel nights (reconciles the Lapland 8-vs-3 night difference in the source sheets).
 function segFoodCost(foodKey){
   const f = DATA.food[foodKey]; if(!f) return 0;
-  return state.foodTier[foodKey]==='spl' ? f.spl : f.reg;
+  const base = state.foodTier[foodKey]==='spl' ? f.spl : f.reg;
+  if(foodKey==='Cruise' || foodKey==='Train') return base;
+  const perNight = base / f.nights;
+  return perNight * state.nights[nightsKeyForFood(foodKey)];
 }
+function hotelTotal(city){ return getHotel(city).nightly * state.nights[city]; }
 function segActCost(seg){
   const list = DATA.activities[seg]||[]; let t=0;
   list.forEach(a=>{ if(state.act[a.id]) t += state.actTier[a.id]==='spl' ? a.spl : a.reg; });
@@ -408,7 +553,7 @@ function getTrain(){ return DATA.train.find(t=>t.id===state.train); }
 
 function computeTotals(){
   const flights = getFlight().total;
-  const lodging = getHotel('Stockholm').total + getHotel('Helsinki').total + getHotel('Rovaniemi').total
+  const lodging = hotelTotal('Stockholm') + hotelTotal('Helsinki') + hotelTotal('Rovaniemi')
                 + getCruise().total + getTrain().total;
   let fa = 0;
   ['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].forEach(k=>{
@@ -422,6 +567,96 @@ function computeTotals(){
 /* ---------- Rendering ---------- */
 const stepBody = document.getElementById('stepBody');
 const stepper = document.getElementById('stepper');
+
+function renderTripBar(){
+  const bar=document.getElementById('tripBar');
+  const n=state.nights, total=totalTripNights();
+  const it=computeItinerary(); const within=it.totalDays<=MAX_DAYS;
+  bar.innerHTML=`<div class="tripbar">
+    <div class="tl-left">
+      <span class="tl-lbl">Trip length</span>
+      <div class="tl-toggle">
+        <button class="${state.tripLength==='full'?'on':''}" data-len="full">Original · 5·3·3</button>
+        <button class="${state.tripLength==='short'?'on':''}" data-len="short">Short · 3·2·3</button>
+        <button class="${state.tripLength==='lapland'?'on':''}" data-len="lapland">More Lapland · 3·3·6</button>
+        ${state.tripLength==='custom'?'<button class="on" disabled>Custom mix</button>':''}
+      </div>
+    </div>
+    <div class="tl-nights">
+      <span class="nchip">Stockholm <b>${n.Stockholm} nts</b></span><span class="nsep">→</span>
+      <span class="nchip cruise">Cruise <b>1 nt</b></span><span class="nsep">→</span>
+      <span class="nchip">Helsinki <b>${n.Helsinki} nts</b></span><span class="nsep">→</span>
+      <span class="nchip cruise">Train <b>1 nt</b></span><span class="nsep">→</span>
+      <span class="nchip">Lapland <b>${n.Rovaniemi} nts</b></span><span class="nsep">=</span>
+      <span class="nchip total">${total} nights away</span>
+    </div>
+    <div class="tl-note">📅 Depart Houston <b>${fmtD(it.departHou)}</b> → fly home <b>${fmtD(it.flyHome)}</b> · <b style="color:${within?'var(--green)':'#c23a56'}">${it.totalDays} days total${within?' — fits your 18-day max ✓':' — OVER the 18-day max, trim a night!'}</b>. ${
+      state.tripLength==='full' ? 'Original plan — 5 nights Stockholm, 3 Helsinki, 3 Lapland.'
+      : state.tripLength==='short' ? 'Short version — trims the cities, keeps Lapland at 3.'
+      : state.tripLength==='lapland' ? 'More Lapland — moved 2 Stockholm nights into Lapland (6 nights) for better aurora & husky odds; Stockholm 3, Helsinki 3.'
+      : 'Custom mix — use the −/+ on each city to rebalance. Use the presets to snap back.'} <b>Adjust nights on each city step with the −/+ buttons.</b></div>
+  </div>`;
+  bar.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{setTripLength(b.dataset.len); render();});
+}
+
+function nightStepper(city){
+  const nts=state.nights[city];
+  const label = city==='Rovaniemi' ? 'Lapland' : city;
+  const wrap=document.createElement('div'); wrap.className='nightctl';
+  wrap.innerHTML=`<span class="nc-lbl">Nights in ${label}</span>`;
+  const dec=document.createElement('button'); dec.className='nc-btn'; dec.textContent='−'; dec.disabled=nts<=NIGHT_MIN;
+  const val=document.createElement('span'); val.className='nc-val'; val.textContent=nts;
+  const inc=document.createElement('button'); inc.className='nc-btn'; inc.textContent='+'; inc.disabled=nts>=NIGHT_MAX;
+  dec.onclick=()=>{bumpNights(city,-1); render();};
+  inc.onclick=()=>{bumpNights(city,1); render();};
+  wrap.appendChild(dec); wrap.appendChild(val); wrap.appendChild(inc);
+  const hint=document.createElement('span'); hint.className='nc-hint';
+  const it=computeItinerary();
+  hint.innerHTML = it.totalDays<=MAX_DAYS
+    ? `Trip is ${it.totalDays} days — within your 18-day max`
+    : `⚠️ Trip is ${it.totalDays} days — over the 18-day max`;
+  hint.style.color = it.totalDays<=MAX_DAYS ? 'var(--muted)' : '#c23a56';
+  wrap.appendChild(hint);
+  return wrap;
+}
+
+function renderFlightDetail(flight){
+  const seg=FLIGHT_SEGMENTS[flight.id];
+  const box=document.createElement('div'); box.className='fdetail';
+  const it=computeItinerary();
+  if(!seg){
+    box.innerHTML=`<div class="fd-head">✈️ ${flight.name} — flight-by-flight</div>
+      <div class="fd-sum">Route: <b>${flight.route}</b>${flight.dur?` · ${flight.dur}`:''}. Detailed departure/arrival times are published for the recommended <b>Premium Economy via London</b> fare — select it to see the full schedule. For this option, exact segment times load closer to travel; reconfirm at booking.</div>`;
+    return box;
+  }
+  const legRows = legs => legs.map(l=>{
+    if(l.lay) return `<div class="fd-lay">↕ ${l.dur} — ${l.lay}</div>`;
+    return `<div class="fd-leg">
+      <div class="fd-flt">${l.f}</div>
+      <div class="fd-mid">
+        <div class="fd-route">${l.r}</div>
+        <div class="fd-times"><b>${l.dep}</b> → <b>${l.arr}</b> · ${l.ac} · <span class="fd-cab">${l.cab}</span></div>
+        <div class="fd-note">${l.note}</div>
+      </div>
+    </div>`;
+  }).join('');
+  box.innerHTML=`<div class="fd-head">✈️ ${flight.name} — flight-by-flight</div>
+    <div class="fd-day">
+      <div class="fd-daytop"><span class="fd-daylbl">${seg.out.title} · overnight</span><span class="fd-daydate">${fmtD(it.departHou)} → ${fmtD(it.stkIn)}</span></div>
+      ${legRows(seg.out.legs)}
+      <div class="fd-arrive">${seg.out.arrive} · ${seg.out.total}</div>
+      <div class="fd-footnote">🌙 Red-eye: leave Houston the afternoon of <b>${fmtD(it.departHou)}</b>, sleep across the ocean, land in Stockholm midday <b>${fmtD(it.stkIn)}</b>. Flying east you lose ~7 hours, so the date jumps forward a day.</div>
+    </div>
+    <div class="fd-day">
+      <div class="fd-daytop"><span class="fd-daylbl">${seg.ret.title} · same-day</span><span class="fd-daydate">${fmtD(it.flyHome)}</span></div>
+      ${legRows(seg.ret.legs)}
+      <div class="fd-arrive">${seg.ret.arrive} · ${seg.ret.total}</div>
+      <div class="fd-footnote">☀️ You leave Lapland in the morning and land in Houston that <b>same evening — ${fmtD(it.flyHome)}</b>. Flying west you gain the hours back, so the calendar date does <b>not</b> move forward. That's your reliable end date.</div>
+      ${seg.ret.note?`<div class="fd-footnote">${seg.ret.note}</div>`:''}
+    </div>
+    <div class="fd-footnote">Your home date (<b>${fmtD(it.flyHome)}</b>) updates automatically if you change departure day or nights. Fares were quoted for the original Mar 6 / Mar 20 dates — shifting travel days can change the price, so reconfirm at booking.</div>`;
+  return box;
+}
 
 function renderStepper(){
   stepper.innerHTML='';
@@ -460,15 +695,35 @@ function optCard(sel, o, priceBig, priceSmall, onClick){
 function renderFlights(){
   stepBody.innerHTML=`<div class="step-head">
     <div class="kicker">Step 1 · Getting there & back</div>
-    <h2>✈️ Flights — Houston ⇄ Scandinavia</h2>
-    <p>Open-jaw for all 5, taxes included (live Google Flights pull, Jul 22 2026 for the 2027 dates). Premium Economy via London is the value pick — it puts the legroom where the 9–10 hr ocean legs are.</p>
+    <h2>✈️ Flights — Houston to Scandinavia and home</h2>
+    <p>Prices are for all 5 of us together, taxes included (real fares checked July 2026 for our 2027 dates). Three seat classes to choose from: <b>Economy</b> = standard seats, cheapest but tight; <b>Premium Economy</b> = wider seats with much more legroom (the value pick — comfortable for the long overnight flights without the Business price); <b>Business</b> = seats that fold into a flat bed for real sleep, but 3× the cost. Some routes go through London, others through Frankfurt — the airline group only matters if you're collecting miles.</p>
   </div>`;
+  stepBody.appendChild(renderDepartToggle());
   const grid=document.createElement('div'); grid.className='opt-grid';
   DATA.flights.forEach(f=>{
     grid.appendChild(optCard(state.flight===f.id, f, money(f.total), money(f.pp)+' / person',
       ()=>{state.flight=f.id; render();}));
   });
   stepBody.appendChild(grid);
+  stepBody.appendChild(renderFlightDetail(getFlight()));
+}
+
+function renderDepartToggle(){
+  const it=computeItinerary();
+  const wrap=document.createElement('div'); wrap.className='subsec';
+  wrap.innerHTML=`<h3>🗓 Leave Houston · it's an overnight red-eye</h3>`;
+  const tg=document.createElement('div'); tg.className='tier-toggle';
+  [['fri','Fri Mar 5'],['sat','Sat Mar 6']].forEach(([v,lbl])=>{
+    const b=document.createElement('button'); b.className=state.departDay===v?'on':''; b.textContent=lbl;
+    b.onclick=()=>{state.departDay=v; render();};
+    tg.appendChild(b);
+  });
+  wrap.appendChild(tg);
+  const note=document.createElement('div'); note.className='tier-note';
+  note.innerHTML = `You fly out in the afternoon and sleep across the ocean, landing in Stockholm around midday <b>the next day</b> — so leaving <b>${fmtD(it.departHou)}</b> puts you in Stockholm <b>${fmtD(it.stkIn)}</b>. Friday works nicely because it's a night flight: leave after the day, don't burn a daytime. Changing this shifts the whole trip (and your home date) by a day.
+    <br><span style="color:#a5701a">💲 Heads-up: the fare shown was quoted for the original Sat Mar 6 / Sat Mar 20 dates. A Friday departure or shifted return can change the price — on long-haul it's usually a modest difference (Fri/Sun tend to run a little higher than Sat), but it's not a live quote. Re-check exact fares near booking.</span>`;
+  wrap.appendChild(note);
+  return wrap;
 }
 
 function renderTierToggle(segKey, foodKey){
@@ -486,8 +741,8 @@ function renderTierToggle(segKey, foodKey){
   wrap.appendChild(tg);
   const note=document.createElement('div'); note.className='tier-note';
   note.textContent = state.foodTier[foodKey]==='reg'
-    ? 'Regular = lunch specials, casual sit-down dinners, daily fika/snacks.'
-    : 'Splurge = fine dining, premium Nordic/Lappish restaurants, more treats.';
+    ? 'Regular = lunch specials, casual sit-down dinners, and daily coffee & pastry stops (the Swedish "fika").'
+    : 'Splurge = fine dining and premium Nordic / Lapland restaurants, with more treats along the way.';
   wrap.appendChild(note);
   return wrap;
 }
@@ -529,15 +784,18 @@ function renderActivities(segKey){
 function renderCity(step){
   const city=step.key; const foodKey=foodKeyFor(city);
   const idx=STEPS.findIndex(s=>s.key===city)+1;
+  const nts=state.nights[city];
+  const [cin,cout]=computeItinerary().cityDates[city];
   stepBody.innerHTML=`<div class="step-head">
-    <div class="kicker">Step ${idx} · ${step.sub}</div>
+    <div class="kicker">Step ${idx} · Check in ${fmtD(cin)} → check out ${fmtD(cout)}</div>
     <h2>🏨 ${step.label} — pick your stay</h2>
-    <p>Nightly rates are for the whole family's room config (family suite or 2 rooms), not per person. Live booking.com rates, Jul 22 2026.</p>
+    <p>Prices below already reflect your stay length here (total for the whole family's rooms, not per person). Live booking.com rates, Jul 22 2026. Use −/+ to change nights and watch the total and dates shift.</p>
   </div>`;
+  stepBody.appendChild(nightStepper(city));
   const grid=document.createElement('div'); grid.className='opt-grid';
   DATA.hotels[city].forEach(h=>{
-    grid.appendChild(optCard(state.hotels[city]===h.id, h, money(h.total),
-      money(h.nightly)+'/nt · '+h.nights+' nts', ()=>{state.hotels[city]=h.id; render();}));
+    grid.appendChild(optCard(state.hotels[city]===h.id, h, money(h.nightly*nts),
+      money(h.nightly)+'/night · '+nts+' nts', ()=>{state.hotels[city]=h.id; render();}));
   });
   stepBody.appendChild(grid);
   stepBody.appendChild(renderTierToggle(city, foodKey));
@@ -548,10 +806,14 @@ function renderTransport(step){
   const pool=step.pool; const segKey=step.key;
   const idx=STEPS.findIndex(s=>s.key===segKey)+1;
   const isCruise = pool==='cruise';
+  const it=computeItinerary();
+  const dstr = isCruise
+    ? `Depart Stockholm eve ${fmtD(it.cruiseNight)} → arrive Helsinki ${fmtD(it.helIn)}`
+    : `Depart Helsinki eve ${fmtD(it.trainNight)} → arrive Rovaniemi ${fmtD(it.rovIn)}`;
   stepBody.innerHTML=`<div class="step-head">
-    <div class="kicker">Step ${idx} · ${step.sub}</div>
-    <h2>${isCruise?'🚢':'🚆'} ${isCruise?'Overnight cruise to Helsinki':'Overnight sleeper to Lapland'}</h2>
-    <p>This overnight leg replaces a hotel night. Pick your cabin class, plus any onboard food &amp; extras.</p>
+    <div class="kicker">Step ${idx} · ${dstr}</div>
+    <h2>${isCruise?'🚢':'🚆'} ${isCruise?'Overnight cruise to Helsinki':'Overnight sleeper train to Lapland'}</h2>
+    <p>You sleep on board, so this overnight leg replaces a hotel night — it doesn't add a day. Pick your cabin class, plus any onboard food &amp; extras.</p>
   </div>`;
   const grid=document.createElement('div'); grid.className='opt-grid';
   const arr = isCruise ? DATA.cruise : DATA.train;
@@ -568,10 +830,11 @@ function renderTransport(step){
 function renderSummary(){
   const t=computeTotals();
   const fl=getFlight();
+  const itH=computeItinerary();
   stepBody.innerHTML=`<div class="step-head">
-    <div class="kicker">Step 7 · Your build</div>
+    <div class="kicker">Step 7 · ${state.tripLength==='full'?'Full':'Short'} trip · ${fmtD(itH.departHou)} – ${fmtD(itH.buffer)} · ${itH.totalDays} days${itH.totalDays<=MAX_DAYS?' (within 18-day max)':''}</div>
     <h2>📋 Trip Summary</h2>
-    <p>Everything you've selected, priced for the family of 5. Adjust anything with the presets below or jump back to any step.</p>
+    <p>Everything you've selected, priced for the family of 5. Use Full/Short at the top to compare, tap a card to jump back, or use a preset below.</p>
   </div>`;
 
   const presets=document.createElement('div'); presets.className='preset-row';
@@ -584,13 +847,15 @@ function renderSummary(){
   stepBody.appendChild(presets);
 
   const grid=document.createElement('div'); grid.className='final-grid';
+  const it=computeItinerary();
+  const dr=c=>`${fmtD(it.cityDates[c][0])} – ${fmtD(it.cityDates[c][1])}`;
   const cards=[
     {h:'Flights', name:fl.name, meta:fl.route, val:fl.total, step:0},
-    {h:'Stockholm · hotel', name:getHotel('Stockholm').name, meta:getHotel('Stockholm').nights+' nights', val:getHotel('Stockholm').total, step:1},
-    {h:'Cruise to Helsinki', name:getCruise().name, meta:'overnight ferry', val:getCruise().total, step:2},
-    {h:'Helsinki · hotel', name:getHotel('Helsinki').name, meta:getHotel('Helsinki').nights+' nights', val:getHotel('Helsinki').total, step:3},
-    {h:'Train to Lapland', name:getTrain().name, meta:'overnight sleeper', val:getTrain().total, step:4},
-    {h:'Lapland · hotel', name:getHotel('Rovaniemi').name, meta:getHotel('Rovaniemi').nights+' nights', val:getHotel('Rovaniemi').total, step:5},
+    {h:'Stockholm · hotel', name:getHotel('Stockholm').name, meta:state.nights.Stockholm+' nights · '+dr('Stockholm'), val:hotelTotal('Stockholm'), step:1},
+    {h:'Cruise to Helsinki', name:getCruise().name, meta:'overnight ferry · '+fmtD(it.cruiseNight), val:getCruise().total, step:2},
+    {h:'Helsinki · hotel', name:getHotel('Helsinki').name, meta:state.nights.Helsinki+' nights · '+dr('Helsinki'), val:hotelTotal('Helsinki'), step:3},
+    {h:'Train to Lapland', name:getTrain().name, meta:'overnight sleeper · '+fmtD(it.trainNight), val:getTrain().total, step:4},
+    {h:'Lapland · hotel', name:getHotel('Rovaniemi').name, meta:state.nights.Rovaniemi+' nights · '+dr('Rovaniemi'), val:hotelTotal('Rovaniemi'), step:5},
   ];
   cards.forEach(c=>{
     const d=document.createElement('div'); d.className='fcard';
@@ -616,6 +881,7 @@ function renderSummary(){
       <span>Lodging + transport <b>${money(t.lodging)}</b></span>
       <span>Food + activities <b>${money(t.fa)}</b></span>
       <span>Per person <b>${money(t.grand/5)}</b></span>
+      <span>${state.tripLength==='full'?'Full':'Short'} · <b>${totalTripNights()} nights away</b></span>
     </div>`;
   stepBody.appendChild(grand);
 
@@ -650,7 +916,7 @@ function applyPreset(p){
 function renderSidebar(){
   const t=computeTotals();
   document.getElementById('sumTotal').textContent=money(t.grand);
-  document.getElementById('sumPP').textContent=money(t.grand/5)+' per person · '+money(t.grand/5/14)+' /person/night';
+  document.getElementById('sumPP').textContent=money(t.grand/5)+' per person · '+totalTripNights()+' nights away';
   document.getElementById('miniFlights').textContent=money(t.flights);
   document.getElementById('miniLodging').textContent=money(t.lodging);
   document.getElementById('miniFA').textContent=money(t.fa);
@@ -658,13 +924,13 @@ function renderSidebar(){
   document.getElementById('mbPP').textContent=money(t.grand/5)+' / person';
 
   const rows=[
-    {name:getFlight().name, sub:'Flights · 5 pax', val:getFlight().total, step:0},
-    {name:getHotel('Stockholm').name, sub:'Stockholm · 5 nts', val:getHotel('Stockholm').total, step:1},
+    {name:getFlight().name, sub:'Flights · 5 people', val:getFlight().total, step:0},
+    {name:getHotel('Stockholm').name, sub:'Stockholm · '+state.nights.Stockholm+' nts', val:hotelTotal('Stockholm'), step:1},
     {name:getCruise().name, sub:'Cruise', val:getCruise().total, step:2},
-    {name:getHotel('Helsinki').name, sub:'Helsinki · 3 nts', val:getHotel('Helsinki').total, step:3},
+    {name:getHotel('Helsinki').name, sub:'Helsinki · '+state.nights.Helsinki+' nts', val:hotelTotal('Helsinki'), step:3},
     {name:getTrain().name, sub:'Train', val:getTrain().total, step:4},
-    {name:getHotel('Rovaniemi').name, sub:'Lapland · 3 nts', val:getHotel('Rovaniemi').total, step:5},
-    {name:'Food & activities', sub:'all segments · 5 pax', val:t.fa, step:5},
+    {name:getHotel('Rovaniemi').name, sub:'Lapland · '+state.nights.Rovaniemi+' nts', val:hotelTotal('Rovaniemi'), step:5},
+    {name:'Food & activities', sub:'all segments · 5 people', val:t.fa, step:5},
   ];
   const body=document.getElementById('sumBody'); body.innerHTML='';
   rows.forEach(r=>{
@@ -679,6 +945,7 @@ function shorten(s){ return s.length>34 ? s.slice(0,32)+'…' : s; }
 /* ---------- Nav ---------- */
 function render(){
   renderStepper();
+  renderTripBar();
   const step=STEPS[state.step];
   if(step.type==='flights') renderFlights();
   else if(step.type==='city') renderCity(step);
@@ -697,7 +964,7 @@ document.getElementById('nextBtn').onclick=()=>go(1);
 document.getElementById('prevBtn').onclick=()=>go(-1);
 document.getElementById('mbNext').onclick=()=>go(1);
 document.getElementById('mbPrev').onclick=()=>go(-1);
-document.getElementById('resetBtn').onclick=()=>{applyPreset('balanced'); state.step=0; render();};
+document.getElementById('resetBtn').onclick=()=>{setTripLength('full'); applyPreset('balanced'); state.step=0; render();};
 document.getElementById('printBtn').onclick=()=>{state.step=STEPS.length-1; render(); setTimeout(()=>window.print(),350);};
 
 render();
