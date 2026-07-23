@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scandinavia 2027 · Trip Cost Estimator</title>
+<style>
+  :root{
+    --ink:#0e1c2b; --ink-soft:#3a4c5e; --muted:#7a8ca0;
+    --line:#e3e9f0; --line-soft:#eef2f7;
+    --bg:#f6f9fc; --card:#ffffff;
+    --frost:#eaf2fb;
+    --brand:#1f6feb; --brand-deep:#0b4bb3;
+    --teal:#0fa3a3; --violet:#6d5ef0; --gold:#d9a441;
+    --green:#1f9d6b; --green-bg:#e7f6ee;
+    --aurora1:#3ad0b0; --aurora2:#4a8ff0; --aurora3:#8a6cf0;
+    --shadow:0 10px 34px rgba(15,45,90,.10);
+    --shadow-sm:0 2px 10px rgba(15,45,90,.07);
+    --r:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--bg);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  a{color:var(--brand);}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    position:relative; overflow:hidden;
+    background:linear-gradient(120deg,#0b2545 0%,#123a63 45%,#1f6feb 100%);
+    color:#fff; padding:30px 26px 26px;
+  }
+  header.hero::after{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 90% at 12% -20%, rgba(58,208,176,.42), transparent 55%),
+      radial-gradient(120% 100% at 88% -10%, rgba(138,108,240,.40), transparent 55%);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative; max-width:1180px; margin:0 auto;}
+  .eyebrow{font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:#bcd6ff; font-weight:600;}
+  header.hero h1{margin:6px 0 4px; font-size:30px; letter-spacing:-.02em; font-weight:800;}
+  header.hero p.sub{margin:0; color:#d3e3ff; font-size:14.5px; max-width:720px;}
+  .hero-meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;}
+  .chip{background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.22); color:#eaf2ff;
+    padding:5px 11px; border-radius:999px; font-size:12.5px; font-weight:500; backdrop-filter:blur(4px);}
+
+  /* ---------- Layout ---------- */
+  .wrap{max-width:1180px; margin:0 auto; padding:22px 22px 120px; display:grid;
+    grid-template-columns:1fr 340px; gap:26px; align-items:start;}
+  @media(max-width:920px){ .wrap{grid-template-columns:1fr; padding-bottom:210px;} }
+
+  /* ---------- Stepper ---------- */
+  .stepper{display:flex; gap:6px; overflow-x:auto; padding:4px 2px 12px; margin-bottom:6px; scrollbar-width:none;}
+  .stepper::-webkit-scrollbar{display:none;}
+  .stepbtn{flex:0 0 auto; display:flex; align-items:center; gap:8px; background:var(--card);
+    border:1px solid var(--line); color:var(--ink-soft); padding:8px 13px; border-radius:999px;
+    font-size:13px; font-weight:600; cursor:pointer; transition:.15s; white-space:nowrap;}
+  .stepbtn:hover{border-color:#c3d4e8;}
+  .stepbtn .num{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;
+    border-radius:50%; background:var(--frost); color:var(--brand-deep); font-size:12px; font-weight:700;}
+  .stepbtn.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .stepbtn.active .num{background:var(--brand); color:#fff;}
+  .stepbtn.done .num{background:var(--green); color:#fff;}
+
+  /* ---------- Cards / panels ---------- */
+  .panel{background:transparent;}
+  .step-head{margin:2px 0 16px;}
+  .step-head .kicker{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .step-head h2{margin:4px 0 4px; font-size:23px; letter-spacing:-.01em;}
+  .step-head p{margin:0; color:var(--ink-soft); font-size:14px; max-width:640px;}
+
+  .opt-grid{display:grid; grid-template-columns:1fr; gap:12px;}
+  .opt{position:relative; background:var(--card); border:1.5px solid var(--line); border-radius:var(--r);
+    padding:16px 18px; cursor:pointer; transition:.15s; box-shadow:var(--shadow-sm);}
+  .opt:hover{border-color:#b9ceea; transform:translateY(-1px);}
+  .opt.sel{border-color:var(--brand); box-shadow:0 0 0 3px rgba(31,111,235,.13), var(--shadow-sm);}
+  .opt.sel::before{content:"✓"; position:absolute; top:14px; right:16px; width:22px; height:22px;
+    background:var(--brand); color:#fff; border-radius:50%; display:flex; align-items:center;
+    justify-content:center; font-size:13px; font-weight:700;}
+  .opt-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px;}
+  .opt-title{font-weight:700; font-size:16px; letter-spacing:-.01em; padding-right:26px;}
+  .opt-badges{display:flex; flex-wrap:wrap; gap:6px; margin:7px 0 2px;}
+  .badge{font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; letter-spacing:.02em;}
+  .b-bonvoy{background:#fff4e0; color:#a5701a;}
+  .b-premium{background:#efeaff; color:#5a45c9;}
+  .b-mid{background:#e6f6ef; color:#177a52;}
+  .b-value{background:#e7f0ff; color:#1a5bd4;}
+  .b-star{background:#fdeef0; color:#c23a56;}
+  .b-fast{background:#e3f6f6; color:#0a7d7d;}
+  .opt-price{text-align:right; white-space:nowrap;}
+  .opt-price .big{font-size:19px; font-weight:800; color:var(--ink);}
+  .opt-price .small{font-size:11.5px; color:var(--muted); font-weight:600;}
+  .opt-desc{font-size:13px; color:var(--ink-soft); margin-top:8px;}
+  .opt-meta{font-size:12px; color:var(--muted); margin-top:7px; display:flex; flex-wrap:wrap; gap:5px 14px;}
+  .opt-meta b{color:var(--ink-soft); font-weight:600;}
+  .avail{color:var(--green); font-weight:600;}
+
+  /* food tier toggle */
+  .subsec{margin-top:22px;}
+  .subsec h3{font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+    margin:0 0 10px; font-weight:700;}
+  .tier-toggle{display:inline-flex; background:var(--frost); border-radius:12px; padding:4px; gap:4px;}
+  .tier-toggle button{border:0; background:transparent; padding:9px 18px; border-radius:9px; cursor:pointer;
+    font-size:13.5px; font-weight:700; color:var(--ink-soft);}
+  .tier-toggle button.on{background:#fff; color:var(--brand-deep); box-shadow:var(--shadow-sm);}
+  .tier-note{font-size:12.5px; color:var(--muted); margin-top:8px;}
+
+  /* activities list */
+  .act{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line);
+    border-radius:12px; padding:11px 14px; margin-bottom:8px;}
+  .act.off{opacity:.55;}
+  .act .cb{flex:0 0 auto; width:22px; height:22px; border-radius:7px; border:2px solid #c4d3e6;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.12s; background:#fff;}
+  .act .cb.on{background:var(--brand); border-color:var(--brand); color:#fff;}
+  .act-main{flex:1 1 auto; min-width:0;}
+  .act-name{font-weight:600; font-size:14px;}
+  .act-detail{font-size:12px; color:var(--muted); margin-top:1px;}
+  .act-right{display:flex; align-items:center; gap:10px; flex:0 0 auto;}
+  .mini-tier{display:inline-flex; background:var(--frost); border-radius:8px; padding:2px;}
+  .mini-tier button{border:0; background:transparent; font-size:11.5px; font-weight:700; color:var(--muted);
+    padding:4px 8px; border-radius:6px; cursor:pointer;}
+  .mini-tier button.on{background:#fff; color:var(--brand-deep); box-shadow:var(--shadow-sm);}
+  .act-price{font-weight:700; font-size:14px; min-width:58px; text-align:right;}
+  .act-price.free{color:var(--green);}
+
+  .navrow{display:flex; justify-content:space-between; margin-top:26px; gap:12px;}
+  .btn{border:0; border-radius:11px; padding:12px 22px; font-size:14.5px; font-weight:700; cursor:pointer;
+    transition:.15s;}
+  .btn-primary{background:var(--brand); color:#fff;}
+  .btn-primary:hover{background:var(--brand-deep);}
+  .btn-ghost{background:var(--card); color:var(--ink-soft); border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:#b9ceea;}
+  .btn:disabled{opacity:.4; cursor:default;}
+
+  /* ---------- Summary sidebar ---------- */
+  aside.summary{position:sticky; top:16px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden;}
+  .sum-head{background:linear-gradient(120deg,#0b2545,#1f6feb); color:#fff; padding:18px 20px;}
+  .sum-head .lbl{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#bcd6ff; font-weight:700;}
+  .sum-total{font-size:34px; font-weight:800; letter-spacing:-.02em; margin-top:2px;}
+  .sum-pp{font-size:12.5px; color:#cfe0ff; margin-top:2px;}
+  .sum-body{padding:8px 6px 6px;}
+  .sum-row{display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    padding:9px 14px; border-radius:10px; cursor:pointer;}
+  .sum-row:hover{background:var(--frost);}
+  .sum-row .r-l{min-width:0;}
+  .sum-row .r-name{font-size:13.5px; font-weight:600;}
+  .sum-row .r-sub{font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; max-width:172px;}
+  .sum-row .r-val{font-size:14px; font-weight:700; white-space:nowrap;}
+  .sum-div{height:1px; background:var(--line-soft); margin:4px 14px;}
+  .sum-foot{padding:12px 16px 16px;}
+  .sum-mini{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin:3px 0;}
+  .sum-actions{display:flex; gap:8px; margin-top:12px;}
+  .sum-actions .btn{flex:1; padding:10px; font-size:13px;}
+
+  /* mobile summary bar */
+  .mobilebar{display:none;}
+  @media(max-width:920px){
+    aside.summary{display:none;}
+    .mobilebar{display:block; position:fixed; left:0; right:0; bottom:0; z-index:40;
+      background:var(--card); border-top:1px solid var(--line); box-shadow:0 -6px 24px rgba(10,30,60,.12);
+      padding:12px 16px calc(12px + env(safe-area-inset-bottom));}
+    .mb-top{display:flex; justify-content:space-between; align-items:center;}
+    .mb-total{font-size:24px; font-weight:800;}
+    .mb-lbl{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+    .mb-pp{font-size:12px; color:var(--muted);}
+  }
+
+  /* ---------- Summary step (final) ---------- */
+  .final-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:640px){ .final-grid{grid-template-columns:1fr;} }
+  .fcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm);}
+  .fcard h4{margin:0 0 3px; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted);}
+  .fcard .fname{font-weight:700; font-size:15px;}
+  .fcard .fmeta{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
+  .fcard .fval{font-size:20px; font-weight:800; margin-top:8px; color:var(--brand-deep);}
+  .grand{background:linear-gradient(120deg,#0b2545,#123a63); color:#fff; border-radius:16px; padding:22px 24px;
+    margin-top:18px; box-shadow:var(--shadow);}
+  .grand .g-lbl{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#bcd6ff; font-weight:700;}
+  .grand .g-num{font-size:40px; font-weight:800; letter-spacing:-.02em;}
+  .grand .g-break{display:flex; flex-wrap:wrap; gap:6px 22px; margin-top:12px; font-size:13px; color:#d3e3ff;}
+  .grand .g-break b{color:#fff;}
+  .preset-row{display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 18px;}
+  .preset{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 14px;
+    font-size:13px; font-weight:700; cursor:pointer; color:var(--ink-soft);}
+  .preset:hover{border-color:var(--brand); color:var(--brand-deep);}
+  .disclaimer{font-size:11.5px; color:var(--muted); margin-top:18px; line-height:1.5;}
+  .hide{display:none !important;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">Michael's Family Travel Services · Prepared from your research spreadsheets</div>
+    <h1>Scandinavia 2027 — Build Your Trip Estimate</h1>
+    <p class="sub">Family of 5 · open-jaw Houston ⇄ Stockholm → Helsinki → Lapland · Sat Mar 6 – Sat Mar 20, 2027. Pick a flight cabin, a hotel in each city, your overnight transport, and dial food &amp; activities up or down — the total updates live.</p>
+    <div class="hero-meta">
+      <span class="chip">3 adults + 2 kids (ages 8 &amp; 4)</span>
+      <span class="chip">~14 nights abroad</span>
+      <span class="chip">Stockholm 5n · Helsinki 3n · Rovaniemi 3n</span>
+      <span class="chip">All prices USD · live pulls Jul 22, 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main class="panel">
+    <div class="stepper" id="stepper"></div>
+    <div id="stepBody"></div>
+    <div class="navrow">
+      <button class="btn btn-ghost" id="prevBtn">← Back</button>
+      <button class="btn btn-primary" id="nextBtn">Next →</button>
+    </div>
+  </main>
+
+  <aside class="summary">
+    <div class="sum-head">
+      <div class="lbl">Estimated Trip Total · Family of 5</div>
+      <div class="sum-total" id="sumTotal">$0</div>
+      <div class="sum-pp" id="sumPP">—</div>
+    </div>
+    <div class="sum-body" id="sumBody"></div>
+    <div class="sum-div"></div>
+    <div class="sum-foot">
+      <div class="sum-mini"><span>Flights</span><span id="miniFlights">$0</span></div>
+      <div class="sum-mini"><span>Lodging + overnight transport</span><span id="miniLodging">$0</span></div>
+      <div class="sum-mini"><span>Food + activities</span><span id="miniFA">$0</span></div>
+      <div class="sum-actions">
+        <button class="btn btn-ghost" id="resetBtn">Reset</button>
+        <button class="btn btn-primary" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<div class="mobilebar">
+  <div class="mb-top">
+    <div>
+      <div class="mb-lbl">Trip total · 5 people</div>
+      <div class="mb-total" id="mbTotal">$0</div>
+      <div class="mb-pp" id="mbPP">—</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-ghost" id="mbPrev" style="padding:10px 14px;">←</button>
+      <button class="btn btn-primary" id="mbNext" style="padding:10px 16px;">Next</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DATA — extracted from the three research spreadsheets
+   (Flight Research, Hotels March 2027, Food & Activity Costs)
+   All figures USD. Hotel/transport totals are for the whole
+   family's stay; flights are the full open-jaw trip for 5.
+   ========================================================= */
+const DATA = {
+  flights: [
+    {id:'econ-lon',  cabin:'Economy',          name:'Economy · via London',            total:4991,  pp:998,  badges:[['Best value','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Cheapest routing. ~31" pitch — tight for a 6\'3" frame on a 9–10 hr overnight, but fine for the short hops.', dur:'13h 35m out'},
+    {id:'econ-fra',  cabin:'Economy',          name:'Economy · Star Alliance via Frankfurt', total:6575, pp:1315, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United)', desc:'Fastest routing (12h45) and lowest emissions; earns United miles. ~$1,584 more than via London.', dur:'12h 45m'},
+    {id:'pe-lon',    cabin:'Premium Economy',  name:'Premium Economy · via London ⭐',  total:9959,  pp:1992, badges:[['Recommended','b-value']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'The value pick. PE on both ocean crossings (where legroom matters), economy on short hops. ~$7,200 cheaper than the Star Alliance PE.', dur:'13h 35m out'},
+    {id:'pe-dfw',    cabin:'Premium Economy',  name:'Premium Economy · humane return via Dallas', total:12366, pp:2473, badges:[['Kid-friendly','b-value']], route:'Out via London; home RVN 9:10 AM via HEL→DFW→IAH', desc:'Skips the brutal 5:20 AM return. ~$400/pp more for a civilized wake-up, a 4-hr-shorter day, no 6-hr London layover.', dur:'18h 14m home'},
+    {id:'pe-fra',    cabin:'Premium Economy',  name:'Premium Economy · Star Alliance via Frankfurt', total:17160, pp:3432, badges:[['Fastest','b-fast'],['Earns United','b-star']], route:'IAH→ARN via FRA (Lufthansa/United), 1 stop', desc:'Fastest + lowest-emission PE and earns United status — but ~$7,200 over the via-London PE.', dur:'12h 45m'},
+    {id:'biz-lon',   cabin:'Business',         name:'Business · via London',           total:30386, pp:6077, badges:[['Lie-flat','b-premium']], route:'IAH→ARN via LHR (BA/AA/Finnair), 1 stop', desc:'Proper lie-flat beds + lounge access. The comfort splurge — roughly 3× the PE fare.', dur:'13h 35m out'},
+    {id:'biz-sa',    cabin:'Business',         name:'Business · Star Alliance',        total:32629, pp:6526, badges:[['Lie-flat','b-premium'],['Earns United','b-star']], route:'IAH→ARN via FRA (AC/Lufthansa)', desc:'Lie-flat Business that earns United; ~$2,243 over the via-London Business.', dur:''},
+  ],
+
+  hotels:{
+    Stockholm:[
+      {id:'sto-grand', name:'Grand Hôtel Stockholm', nightly:950, nights:5, total:4750, badges:[['Premium 5★','b-premium']], loc:'Waterfront, Blasieholmen · Old Town views', beds:'2 Deluxe rooms (queen + twins), extra bed for mom', desc:'Stockholm\'s grande dame (1874); spa, indoor pool, 5 restaurants; genuinely family-welcoming.', avail:'Verified available · book 2 rooms'},
+      {id:'sto-sheraton', name:'Sheraton Stockholm Hotel', nightly:500, nights:5, total:2500, badges:[['Marriott · Bonvoy','b-bonvoy']], loc:'City center, steps from Central Station', beds:'2 rooms: Classic King + Classic 2-Double (mom + 2 kids)', desc:'Full Bonvoy Platinum perks (upgrades, lounge, breakfast); connecting rooms; walk to Gamla Stan & trains.', avail:'Verified available · book direct on Marriott.com'},
+      {id:'sto-camper', name:'Downtown Camper by Scandic', nightly:430, nights:5, total:2150, badges:[['Mid-range · top-rated','b-mid']], loc:'Brunkebergstorg, central', beds:'Deluxe King Suite fits all 5 (king + queen + 2 bunks)', desc:'Playful "urban basecamp" kids love; rooftop pool/sauna, gear to borrow. Best value.', avail:'Verified available'},
+    ],
+    Helsinki:[
+      {id:'hel-george', name:'Hotel St. George', nightly:650, nights:3, total:1950, badges:[['Marriott · Bonvoy','b-bonvoy'],['Design Hotels','b-premium']], loc:'City center by Old Church Park', beds:'2 studios (queen + king) · kids on rollaways (€60/bed)', desc:'5★ art-filled design hotel; spa, pool, acclaimed dining. King/queen only — least ideal for separate kid beds.', avail:'Verified available · Marriott.com'},
+      {id:'hel-u14', name:'Hotel U14, Autograph Collection', nightly:450, nights:3, total:1350, badges:[['Marriott · Bonvoy','b-bonvoy']], loc:'Near Market Square & harbor', beds:'2 rooms: King + Larger 2-Twin (kids own beds), mom rollaway', desc:'Arguably the best location in Helsinki; boutique Autograph, sauna, free bikes, family-friendly.', avail:'Verified available · Marriott.com'},
+      {id:'hel-clarion', name:'Clarion Hotel Helsinki', nightly:260, nights:3, total:780, badges:[['Mid-range · family fave','b-mid']], loc:'Jätkäsaari seafront', beds:'2 rooms (Twin + King/Queen) or a Family Room (sleeps 4–5)', desc:'Rooftop pool & sauna with sea views (huge kid win); modern family rooms; great value. ~15 min from center.', avail:'Verified available · best value'},
+    ],
+    Rovaniemi:[
+      {id:'rov-ath1', name:'Arctic TreeHouse — Glass House (1 unit, all 5)', nightly:1896, nights:3, total:5688, badges:[['Premium glass suite','b-premium']], loc:'Next to SantaPark, edge of town', beds:'2 bedrooms (2 queens) + living-room sofa bed (2 kids share)', desc:'Iconic aurora & forest views through panoramic glass; Rakas restaurant, sauna, breakfast incl.', avail:'Verified available · only 4 left — book early'},
+      {id:'rov-ath2', name:'Arctic TreeHouse — TWO Executive Suites', nightly:4056, nights:3, total:12168, badges:[['Premium glass ×2','b-premium']], loc:'Next to SantaPark, edge of town', beds:'2 suites, each king + bunk · everyone own bed, mom private', desc:'Same property split into two glass suites; a king in each. The top-end splurge.', avail:'Verified available · Executive Suite $2,028/nt each'},
+      {id:'rov-apk1', name:'Apukka — Aurora Cabin Family (1 unit, all 5)', nightly:1096, nights:3, total:3288, badges:[['Premium glass igloo','b-premium']], loc:'Lakeside, 20 min from center', beds:'2 bedrooms (queen + sofa bed; full) · 2 kids share sofa bed', desc:'Family glass igloo, heated glass roof for aurora; on-site husky/reindeer programs. 15% off 3+ nights direct.', avail:'Verified available · ~$930/nt with direct discount'},
+      {id:'rov-apk2', name:'Apukka — TWO glass igloos', nightly:1720, nights:3, total:5160, badges:[['Premium glass ×2','b-premium']], loc:'Lakeside, 20 min from center', beds:'2 igloos · mom + a kid get their own; aurora from every bed', desc:'Same resort split into two glass-roofed igloos; more privacy. ~$620/nt over the single family igloo.', avail:'Verified available · book direct for 15% off'},
+      {id:'rov-nova', name:'Nova Skyland Hotel', nightly:1054, nights:3, total:3162, badges:[['Premium · apartments','b-premium']], loc:'Next to Santa Claus Village', beds:'Luxury Nordic Cottage: 2 queens + 2 sofa beds (each kid own)', desc:'Apartment-style with fireplace & private sauna; walk to Santa Claus Village. Big windows (not a glass igloo).', avail:'Verified available · good stock'},
+      {id:'rov-sokos', name:'Original Sokos Hotel Vaakuna', nightly:840, nights:3, total:2520, badges:[['Mid-range · in-town','b-mid']], loc:'Downtown Rovaniemi', beds:'2 rooms: Standard Triple (mom + 2 kids) + Double/Twin', desc:'Central, reliable, family-friendly; walk to restaurants & museums. In-town fallback (Santa Claus hotel sold out).', avail:'Verified available · no glass-roof view'},
+    ],
+  },
+
+  cruise:[
+    {id:'cru-std', name:'Silja Line — Standard sea-view cabins ×2', total:400, badges:[['Value','b-value']], desc:'Two adjoining sea-view cabins (berths for 5); shops, pool/sauna, kids\' area, archipelago sail.', meta:'~17 hrs · Stockholm → Helsinki · replaces a hotel night'},
+    {id:'cru-com', name:'Silja Line — Commodore class', total:650, badges:[['Premium','b-premium']], desc:'Top-deck Commodore cabins (20–25 m²), lounge access, breakfast & sparkling included, best views. 5 needs Commodore + standard cabin.', meta:'~17 hrs · Stockholm → Helsinki · replaces a hotel night'},
+  ],
+  train:[
+    {id:'trn-ens', name:"Santa's Claus Express — En-suite sleeper ×2–3", total:320, badges:[['Comfort','b-premium']], desc:'Two–three en-suite double cabins; lower cabins interconnect via a conductor-unlocked door — ideal for a family.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · replaces a hotel night'},
+    {id:'trn-std', name:"Santa's Claus Express — Standard sleeper", total:210, badges:[['Value','b-value']], desc:'Standard 2-berth sleeper cabins (shared corridor showers); cheapest berth option.', meta:'~12 hrs overnight · Helsinki → Rovaniemi · replaces a hotel night'},
+  ],
+
+  /* Food subtotals (whole family) per segment, and activity line items.
+     Activity totals combine adults + kids. reg/spl equal means no tier choice. */
+  food:{
+    Stockholm:{reg:1385, spl:3075, nights:5},
+    Cruise:{reg:191, spl:299, nights:1},
+    Helsinki:{reg:822, spl:1767, nights:3},
+    Train:{reg:162, spl:240, nights:1},
+    Lapland:{reg:2296, spl:4776, nights:8},
+  },
+  activities:{
+    Stockholm:[
+      {id:'s-vasa', name:'Vasa Museum', detail:'World\'s best-preserved 17th-c. warship · under-18 free', reg:54, spl:54, def:true},
+      {id:'s-skansen', name:'Skansen open-air museum', detail:'Nordic history + zoo · under-15 free', reg:69, spl:69, def:true},
+      {id:'s-juni', name:'Junibacken', detail:'Pippi / story-book children\'s museum', reg:101, spl:101, def:true},
+      {id:'s-djur', name:'Djurgården / archipelago', detail:'Public ferry vs archipelago dinner cruise', reg:80, spl:480, def:true},
+      {id:'s-abba', name:'ABBA Museum', detail:'Interactive music museum', reg:0, spl:101, def:false},
+      {id:'s-grona', name:'Gröna Lund amusement', detail:'Entry + ride wristband', reg:0, spl:248, def:false},
+      {id:'s-foto', name:'Fotografiska', detail:'Photography museum', reg:0, spl:60, def:false},
+      {id:'s-gamla', name:'Gamla Stan private guide', detail:'Self-guided is free; splurge = private family guide', reg:0, spl:180, def:false},
+    ],
+    Cruise:[
+      {id:'c-sauna', name:'Sauna & spa access (adults)', detail:'Onboard spa', reg:0, spl:60, def:false},
+      {id:'c-arcade', name:'Arcade / games (kids)', detail:'Onboard arcade', reg:0, spl:30, def:false},
+    ],
+    Helsinki:[
+      {id:'h-suomen', name:'Suomenlinna sea fortress', detail:'HSL ferry (fortress free) vs guided tour', reg:16, spl:130, def:true},
+      {id:'h-linnan', name:'Linnanmäki amusement park', detail:'A few rides vs full ride wristband', reg:96, spl:340, def:true},
+      {id:'h-nathist', name:'Natural History / Sea Life', detail:'Family attraction', reg:74, spl:74, def:true},
+      {id:'h-ateneum', name:'Ateneum / HAM art museum', detail:'Under-18 free', reg:0, spl:66, def:false},
+      {id:'h-loyly', name:'Löyly public sauna', detail:'Iconic Finnish sauna experience', reg:0, spl:75, def:false},
+    ],
+    Train:[],
+    Lapland:[
+      {id:'l-santa', name:'Meet Santa Claus photo', detail:'Standard photo vs private meeting', reg:40, spl:150, def:true},
+      {id:'l-post', name:"Santa's Main Post Office", detail:'Letters & postmarks', reg:20, spl:25, def:true},
+      {id:'l-husky', name:'Husky sled safari', detail:'30-min ride vs Northern Lights husky ride', reg:240, spl:760, def:true},
+      {id:'l-reindeer', name:'Reindeer sleigh farm', detail:'Short ride vs farm visit + certificate', reg:120, spl:370, def:true},
+      {id:'l-aurora', name:'Northern Lights aurora tour', detail:'Minibus hunt vs photography / igloo tour', reg:470, spl:760, def:true},
+      {id:'l-snowmob', name:'Snowmobile family safari', detail:'Short session vs full-day wilderness', reg:300, spl:600, def:true},
+      {id:'l-snowcastle', name:'SnowCastle / Arctic ice', detail:'Visit vs ice-restaurant Lappish dinner', reg:75, spl:480, def:false},
+      {id:'l-ranua', name:'Ranua Arctic Wildlife Park', detail:'Day trip · arctic zoo', reg:100, spl:100, def:false},
+      {id:'l-icefish', name:'Ice fishing / snowshoe outing', detail:'Half-day guided', reg:290, spl:470, def:false},
+      {id:'l-arktikum', name:'Arktikum Science Museum', detail:'Rovaniemi science & Sámi culture', reg:78, spl:78, def:true},
+    ],
+  },
+};
+
+/* ---------- Steps definition ---------- */
+const STEPS = [
+  {key:'flights',  label:'Flights',   type:'flights'},
+  {key:'Stockholm',label:'Stockholm', type:'city',   nights:5, sub:'Sun Mar 7 – Thu Mar 12 · 5 nights'},
+  {key:'Cruise',   label:'Cruise',    type:'transport', pool:'cruise', sub:'Thu Mar 12 → Fri Mar 13 · overnight Silja ferry'},
+  {key:'Helsinki', label:'Helsinki',  type:'city',   nights:3, sub:'Fri Mar 13 – Mon Mar 16 · 3 nights'},
+  {key:'Train',    label:'Train',     type:'transport', pool:'train', sub:'Mon Mar 16 → Tue Mar 17 · overnight sleeper'},
+  {key:'Rovaniemi',label:'Lapland',   type:'city',   nights:3, sub:'Tue Mar 17 – Fri Mar 20 · 3 nights', foodKey:'Lapland'},
+  {key:'summary',  label:'Summary',   type:'summary'},
+];
+
+/* ---------- State ---------- */
+const state = {
+  flight:'pe-lon',
+  hotels:{Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'},
+  cruise:'cru-std',
+  train:'trn-ens',
+  foodTier:{Stockholm:'reg', Cruise:'reg', Helsinki:'reg', Train:'reg', Lapland:'reg'},
+  act:{},          // id -> true/false (included)
+  actTier:{},      // id -> 'reg'|'spl'
+  step:0,
+};
+// init activities
+function initActivities(){
+  for(const seg in DATA.activities){
+    DATA.activities[seg].forEach(a=>{
+      state.act[a.id] = a.def;
+      state.actTier[a.id] = 'reg';
+    });
+  }
+}
+initActivities();
+
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const foodKeyFor = key => key==='Rovaniemi' ? 'Lapland' : key;
+
+/* ---------- Cost computation ---------- */
+function segFoodCost(foodKey){
+  const f = DATA.food[foodKey]; if(!f) return 0;
+  return state.foodTier[foodKey]==='spl' ? f.spl : f.reg;
+}
+function segActCost(seg){
+  const list = DATA.activities[seg]||[]; let t=0;
+  list.forEach(a=>{ if(state.act[a.id]) t += state.actTier[a.id]==='spl' ? a.spl : a.reg; });
+  return t;
+}
+function cityFoodActCost(cityKey){
+  const fk = foodKeyFor(cityKey);
+  return segFoodCost(fk) + segActCost(fk);
+}
+function transportFoodActCost(segKey){
+  return segFoodCost(segKey) + segActCost(segKey);
+}
+function getFlight(){ return DATA.flights.find(f=>f.id===state.flight); }
+function getHotel(city){ return DATA.hotels[city].find(h=>h.id===state.hotels[city]); }
+function getCruise(){ return DATA.cruise.find(c=>c.id===state.cruise); }
+function getTrain(){ return DATA.train.find(t=>t.id===state.train); }
+
+function computeTotals(){
+  const flights = getFlight().total;
+  const lodging = getHotel('Stockholm').total + getHotel('Helsinki').total + getHotel('Rovaniemi').total
+                + getCruise().total + getTrain().total;
+  let fa = 0;
+  ['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].forEach(k=>{
+    if(k==='Cruise'||k==='Train') fa += transportFoodActCost(k);
+    else fa += cityFoodActCost(k);
+  });
+  const grand = flights + lodging + fa;
+  return {flights, lodging, fa, grand};
+}
+
+/* ---------- Rendering ---------- */
+const stepBody = document.getElementById('stepBody');
+const stepper = document.getElementById('stepper');
+
+function renderStepper(){
+  stepper.innerHTML='';
+  STEPS.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='stepbtn'+(i===state.step?' active':'')+(i<state.step?' done':'');
+    b.innerHTML=`<span class="num">${i<state.step?'✓':i+1}</span>${s.label}`;
+    b.onclick=()=>{state.step=i; render();};
+    stepper.appendChild(b);
+  });
+}
+
+function optCard(sel, o, priceBig, priceSmall, onClick){
+  const badges=(o.badges||[]).map(b=>`<span class="badge ${b[1]}">${b[0]}</span>`).join('');
+  const div=document.createElement('div');
+  div.className='opt'+(sel?' sel':'');
+  div.innerHTML=`
+    <div class="opt-top">
+      <div style="min-width:0">
+        <div class="opt-title">${o.name}</div>
+        <div class="opt-badges">${badges}</div>
+      </div>
+      <div class="opt-price"><div class="big">${priceBig}</div><div class="small">${priceSmall}</div></div>
+    </div>
+    ${o.route?`<div class="opt-meta"><b>Route:</b> ${o.route}${o.dur?` · <b>${o.dur}</b>`:''}</div>`:''}
+    ${o.loc?`<div class="opt-meta"><b>${o.loc}</b></div>`:''}
+    ${o.beds?`<div class="opt-meta">🛏 ${o.beds}</div>`:''}
+    ${o.meta?`<div class="opt-meta">${o.meta}</div>`:''}
+    <div class="opt-desc">${o.desc}</div>
+    ${o.avail?`<div class="opt-meta avail">✔ ${o.avail}</div>`:''}
+  `;
+  div.onclick=onClick;
+  return div;
+}
+
+function renderFlights(){
+  stepBody.innerHTML=`<div class="step-head">
+    <div class="kicker">Step 1 · Getting there & back</div>
+    <h2>✈️ Flights — Houston ⇄ Scandinavia</h2>
+    <p>Open-jaw for all 5, taxes included (live Google Flights pull, Jul 22 2026 for the 2027 dates). Premium Economy via London is the value pick — it puts the legroom where the 9–10 hr ocean legs are.</p>
+  </div>`;
+  const grid=document.createElement('div'); grid.className='opt-grid';
+  DATA.flights.forEach(f=>{
+    grid.appendChild(optCard(state.flight===f.id, f, money(f.total), money(f.pp)+' / person',
+      ()=>{state.flight=f.id; render();}));
+  });
+  stepBody.appendChild(grid);
+}
+
+function renderTierToggle(segKey, foodKey){
+  const f=DATA.food[foodKey];
+  const wrap=document.createElement('div'); wrap.className='subsec';
+  wrap.innerHTML=`<h3>🍽 Food tier · ${f.nights} ${f.nights===1?'day':'days'} of meals for 5</h3>`;
+  const tg=document.createElement('div'); tg.className='tier-toggle';
+  [['reg','Regular',f.reg],['spl','Splurge',f.spl]].forEach(([v,lbl,amt])=>{
+    const b=document.createElement('button');
+    b.className=state.foodTier[foodKey]===v?'on':'';
+    b.innerHTML=`${lbl} · ${money(amt)}`;
+    b.onclick=()=>{state.foodTier[foodKey]=v; render();};
+    tg.appendChild(b);
+  });
+  wrap.appendChild(tg);
+  const note=document.createElement('div'); note.className='tier-note';
+  note.textContent = state.foodTier[foodKey]==='reg'
+    ? 'Regular = lunch specials, casual sit-down dinners, daily fika/snacks.'
+    : 'Splurge = fine dining, premium Nordic/Lappish restaurants, more treats.';
+  wrap.appendChild(note);
+  return wrap;
+}
+
+function renderActivities(segKey){
+  const list=DATA.activities[segKey]||[];
+  if(!list.length) return null;
+  const wrap=document.createElement('div'); wrap.className='subsec';
+  wrap.innerHTML=`<h3>🎟 Activities · tap to include, choose Regular or Splurge</h3>`;
+  list.forEach(a=>{
+    const on=state.act[a.id];
+    const hasTier = a.reg!==a.spl;
+    const cur = state.actTier[a.id]==='spl' ? a.spl : a.reg;
+    const row=document.createElement('div'); row.className='act'+(on?'':' off');
+    const cb=document.createElement('div'); cb.className='cb'+(on?' on':''); cb.innerHTML=on?'✓':'';
+    cb.onclick=()=>{state.act[a.id]=!state.act[a.id]; render();};
+    const main=document.createElement('div'); main.className='act-main';
+    main.innerHTML=`<div class="act-name">${a.name}</div><div class="act-detail">${a.detail}</div>`;
+    const right=document.createElement('div'); right.className='act-right';
+    if(hasTier){
+      const mt=document.createElement('div'); mt.className='mini-tier';
+      [['reg','Reg',a.reg],['spl','Splr',a.spl]].forEach(([v,lbl])=>{
+        const b=document.createElement('button'); b.className=state.actTier[a.id]===v?'on':''; b.textContent=lbl;
+        b.onclick=(e)=>{e.stopPropagation(); state.actTier[a.id]=v; if(!state.act[a.id])state.act[a.id]=true; render();};
+        mt.appendChild(b);
+      });
+      right.appendChild(mt);
+    }
+    const price=document.createElement('div');
+    price.className='act-price'+(cur===0?' free':'');
+    price.textContent = cur===0 ? 'Free' : money(cur);
+    right.appendChild(price);
+    row.appendChild(cb); row.appendChild(main); row.appendChild(right);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+
+function renderCity(step){
+  const city=step.key; const foodKey=foodKeyFor(city);
+  const idx=STEPS.findIndex(s=>s.key===city)+1;
+  stepBody.innerHTML=`<div class="step-head">
+    <div class="kicker">Step ${idx} · ${step.sub}</div>
+    <h2>🏨 ${step.label} — pick your stay</h2>
+    <p>Nightly rates are for the whole family's room config (family suite or 2 rooms), not per person. Live booking.com rates, Jul 22 2026.</p>
+  </div>`;
+  const grid=document.createElement('div'); grid.className='opt-grid';
+  DATA.hotels[city].forEach(h=>{
+    grid.appendChild(optCard(state.hotels[city]===h.id, h, money(h.total),
+      money(h.nightly)+'/nt · '+h.nights+' nts', ()=>{state.hotels[city]=h.id; render();}));
+  });
+  stepBody.appendChild(grid);
+  stepBody.appendChild(renderTierToggle(city, foodKey));
+  const acts=renderActivities(foodKey); if(acts) stepBody.appendChild(acts);
+}
+
+function renderTransport(step){
+  const pool=step.pool; const segKey=step.key;
+  const idx=STEPS.findIndex(s=>s.key===segKey)+1;
+  const isCruise = pool==='cruise';
+  stepBody.innerHTML=`<div class="step-head">
+    <div class="kicker">Step ${idx} · ${step.sub}</div>
+    <h2>${isCruise?'🚢':'🚆'} ${isCruise?'Overnight cruise to Helsinki':'Overnight sleeper to Lapland'}</h2>
+    <p>This overnight leg replaces a hotel night. Pick your cabin class, plus any onboard food &amp; extras.</p>
+  </div>`;
+  const grid=document.createElement('div'); grid.className='opt-grid';
+  const arr = isCruise ? DATA.cruise : DATA.train;
+  const stKey = isCruise ? 'cruise' : 'train';
+  arr.forEach(o=>{
+    grid.appendChild(optCard(state[stKey]===o.id, o, money(o.total), 'family · one-way',
+      ()=>{state[stKey]=o.id; render();}));
+  });
+  stepBody.appendChild(grid);
+  stepBody.appendChild(renderTierToggle(segKey, segKey));
+  const acts=renderActivities(segKey); if(acts) stepBody.appendChild(acts);
+}
+
+function renderSummary(){
+  const t=computeTotals();
+  const fl=getFlight();
+  stepBody.innerHTML=`<div class="step-head">
+    <div class="kicker">Step 7 · Your build</div>
+    <h2>📋 Trip Summary</h2>
+    <p>Everything you've selected, priced for the family of 5. Adjust anything with the presets below or jump back to any step.</p>
+  </div>`;
+
+  const presets=document.createElement('div'); presets.className='preset-row';
+  presets.innerHTML='<span style="font-size:12px;color:var(--muted);font-weight:700;align-self:center;letter-spacing:.06em;">QUICK PRESETS:</span>';
+  [['💎 Premium build','premium'],['💰 Value build','value'],['⚖️ Balanced (recommended)','balanced']].forEach(([lbl,p])=>{
+    const b=document.createElement('button'); b.className='preset'; b.textContent=lbl;
+    b.onclick=()=>{applyPreset(p); render();};
+    presets.appendChild(b);
+  });
+  stepBody.appendChild(presets);
+
+  const grid=document.createElement('div'); grid.className='final-grid';
+  const cards=[
+    {h:'Flights', name:fl.name, meta:fl.route, val:fl.total, step:0},
+    {h:'Stockholm · hotel', name:getHotel('Stockholm').name, meta:getHotel('Stockholm').nights+' nights', val:getHotel('Stockholm').total, step:1},
+    {h:'Cruise to Helsinki', name:getCruise().name, meta:'overnight ferry', val:getCruise().total, step:2},
+    {h:'Helsinki · hotel', name:getHotel('Helsinki').name, meta:getHotel('Helsinki').nights+' nights', val:getHotel('Helsinki').total, step:3},
+    {h:'Train to Lapland', name:getTrain().name, meta:'overnight sleeper', val:getTrain().total, step:4},
+    {h:'Lapland · hotel', name:getHotel('Rovaniemi').name, meta:getHotel('Rovaniemi').nights+' nights', val:getHotel('Rovaniemi').total, step:5},
+  ];
+  cards.forEach(c=>{
+    const d=document.createElement('div'); d.className='fcard';
+    d.innerHTML=`<h4>${c.h}</h4><div class="fname">${c.name}</div><div class="fmeta">${c.meta}</div><div class="fval">${money(c.val)}</div>`;
+    d.style.cursor='pointer'; d.onclick=()=>{state.step=c.step; render();};
+    grid.appendChild(d);
+  });
+  // food & activities card
+  const fad=document.createElement('div'); fad.className='fcard';
+  const perSeg=['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].map(k=>{
+    const v = (k==='Cruise'||k==='Train')?transportFoodActCost(k):cityFoodActCost(k);
+    return `${k==='Rovaniemi'?'Lapland':k}: ${money(v)}`;
+  }).join(' · ');
+  fad.innerHTML=`<h4>Food &amp; activities · all segments</h4><div class="fname">Meals + tours for 5</div><div class="fmeta">${perSeg}</div><div class="fval">${money(t.fa)}</div>`;
+  grid.appendChild(fad);
+  stepBody.appendChild(grid);
+
+  const grand=document.createElement('div'); grand.className='grand';
+  grand.innerHTML=`<div class="g-lbl">Estimated Grand Total · family of 5</div>
+    <div class="g-num">${money(t.grand)}</div>
+    <div class="g-break">
+      <span>Flights <b>${money(t.flights)}</b></span>
+      <span>Lodging + transport <b>${money(t.lodging)}</b></span>
+      <span>Food + activities <b>${money(t.fa)}</b></span>
+      <span>Per person <b>${money(t.grand/5)}</b></span>
+    </div>`;
+  stepBody.appendChild(grand);
+
+  const disc=document.createElement('div'); disc.className='disclaimer';
+  disc.innerHTML='Estimates for early–mid March 2027, family of 5, built from your three research spreadsheets. Flights are live Google Flights pulls; hotels are live booking.com rates; food &amp; activities reflect 2025–26 published rates. Firm 2027 fares aren\'t all published yet — treat as a planning range and reconfirm at booking. Not included: local transit passes, travel insurance, shopping/souvenirs, seat-selection & extra-bag fees. Book Marriott stays direct on Marriott.com for Bonvoy Platinum perks.';
+  stepBody.appendChild(disc);
+}
+
+function applyPreset(p){
+  if(p==='premium'){
+    state.flight='biz-lon';
+    state.hotels={Stockholm:'sto-grand', Helsinki:'hel-george', Rovaniemi:'rov-ath1'};
+    state.cruise='cru-com'; state.train='trn-ens';
+    for(const k in state.foodTier) state.foodTier[k]='spl';
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=true; state.actTier[a.id]='spl';});
+  }else if(p==='value'){
+    state.flight='econ-lon';
+    state.hotels={Stockholm:'sto-camper', Helsinki:'hel-clarion', Rovaniemi:'rov-sokos'};
+    state.cruise='cru-std'; state.train='trn-std';
+    for(const k in state.foodTier) state.foodTier[k]='reg';
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def; state.actTier[a.id]='reg';});
+  }else{ // balanced
+    state.flight='pe-lon';
+    state.hotels={Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'};
+    state.cruise='cru-std'; state.train='trn-ens';
+    for(const k in state.foodTier) state.foodTier[k]='reg';
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def; state.actTier[a.id]='reg';});
+  }
+}
+
+/* ---------- Summary sidebar ---------- */
+function renderSidebar(){
+  const t=computeTotals();
+  document.getElementById('sumTotal').textContent=money(t.grand);
+  document.getElementById('sumPP').textContent=money(t.grand/5)+' per person · '+money(t.grand/5/14)+' /person/night';
+  document.getElementById('miniFlights').textContent=money(t.flights);
+  document.getElementById('miniLodging').textContent=money(t.lodging);
+  document.getElementById('miniFA').textContent=money(t.fa);
+  document.getElementById('mbTotal').textContent=money(t.grand);
+  document.getElementById('mbPP').textContent=money(t.grand/5)+' / person';
+
+  const rows=[
+    {name:getFlight().name, sub:'Flights · 5 pax', val:getFlight().total, step:0},
+    {name:getHotel('Stockholm').name, sub:'Stockholm · 5 nts', val:getHotel('Stockholm').total, step:1},
+    {name:getCruise().name, sub:'Cruise', val:getCruise().total, step:2},
+    {name:getHotel('Helsinki').name, sub:'Helsinki · 3 nts', val:getHotel('Helsinki').total, step:3},
+    {name:getTrain().name, sub:'Train', val:getTrain().total, step:4},
+    {name:getHotel('Rovaniemi').name, sub:'Lapland · 3 nts', val:getHotel('Rovaniemi').total, step:5},
+    {name:'Food & activities', sub:'all segments · 5 pax', val:t.fa, step:5},
+  ];
+  const body=document.getElementById('sumBody'); body.innerHTML='';
+  rows.forEach(r=>{
+    const d=document.createElement('div'); d.className='sum-row';
+    d.innerHTML=`<div class="r-l"><div class="r-name">${shorten(r.name)}</div><div class="r-sub">${r.sub}</div></div><div class="r-val">${money(r.val)}</div>`;
+    d.onclick=()=>{state.step=r.step; render();};
+    body.appendChild(d);
+  });
+}
+function shorten(s){ return s.length>34 ? s.slice(0,32)+'…' : s; }
+
+/* ---------- Nav ---------- */
+function render(){
+  renderStepper();
+  const step=STEPS[state.step];
+  if(step.type==='flights') renderFlights();
+  else if(step.type==='city') renderCity(step);
+  else if(step.type==='transport') renderTransport(step);
+  else if(step.type==='summary') renderSummary();
+  renderSidebar();
+  document.getElementById('prevBtn').disabled = state.step===0;
+  const last = state.step===STEPS.length-1;
+  document.getElementById('nextBtn').textContent = last ? 'Done ✓' : 'Next →';
+  document.getElementById('mbNext').textContent = last ? 'Done' : 'Next';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function go(d){ state.step=Math.max(0,Math.min(STEPS.length-1,state.step+d)); render(); }
+
+document.getElementById('nextBtn').onclick=()=>go(1);
+document.getElementById('prevBtn').onclick=()=>go(-1);
+document.getElementById('mbNext').onclick=()=>go(1);
+document.getElementById('mbPrev').onclick=()=>go(-1);
+document.getElementById('resetBtn').onclick=()=>{applyPreset('balanced'); state.step=0; render();};
+document.getElementById('printBtn').onclick=()=>{state.step=STEPS.length-1; render(); setTimeout(()=>window.print(),350);};
+
+render();
+</script>
+</body>
+</html>
