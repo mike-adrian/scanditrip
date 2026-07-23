@@ -497,13 +497,12 @@ const state = {
   tripLength:'recommended',
   departDay:'sat',   // 'fri' = leave Houston Fri Mar 5; 'sat' = Sat Mar 6 (both overnight red-eyes)
   nights:{Stockholm:3, Helsinki:3, Rovaniemi:5},
-  flight:'pe-lon',
-  hotels:{Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'},
-  cruise:'cru-std',
-  train:'trn-ens',
-  foodTier:{Stockholm:'reg', Cruise:'reg', Helsinki:'reg', Train:'reg', Lapland:'reg'},
-  act:{},          // id -> true/false (included)
-  actTier:{},      // id -> 'reg'|'spl'
+  flight:null,       // nothing selected — build the trip from $0
+  hotels:{Stockholm:null, Helsinki:null, Rovaniemi:null},
+  cruise:null,
+  train:null,
+  foodTier:{Stockholm:null, Cruise:null, Helsinki:null, Train:null, Lapland:null},
+  act:{},            // id -> true/false (included)
   step:0,
 };
 function setTripLength(len){
@@ -552,12 +551,14 @@ const addDays = (dt,k) => { const x=new Date(dt); x.setDate(x.getDate()+k); retu
 // match hotel nights (reconciles the Lapland 8-vs-3 night difference in the source sheets).
 function segFoodCost(foodKey){
   const f = DATA.food[foodKey]; if(!f) return 0;
-  const base = state.foodTier[foodKey]==='spl' ? f.spl : f.reg;
+  const tier = state.foodTier[foodKey];
+  if(!tier) return 0;                       // no food tier chosen yet
+  const base = tier==='spl' ? f.spl : f.reg;
   if(foodKey==='Cruise' || foodKey==='Train') return base;
   const perNight = base / f.nights;
   return perNight * state.nights[nightsKeyForFood(foodKey)];
 }
-function hotelTotal(city){ return getHotel(city).nightly * state.nights[city]; }
+function hotelTotal(city){ const h=getHotel(city); return h ? h.nightly * state.nights[city] : 0; }
 function segActCost(seg){
   const list = DATA.activities[seg]||[]; let t=0;
   list.forEach(a=>{ if(state.act[a.id]) t += a.cost; });
@@ -576,9 +577,9 @@ function getCruise(){ return DATA.cruise.find(c=>c.id===state.cruise); }
 function getTrain(){ return DATA.train.find(t=>t.id===state.train); }
 
 function computeTotals(){
-  const flights = getFlight().total;
+  const flights = getFlight() ? getFlight().total : 0;
   const lodging = hotelTotal('Stockholm') + hotelTotal('Helsinki') + hotelTotal('Rovaniemi')
-                + getCruise().total + getTrain().total;
+                + (getCruise() ? getCruise().total : 0) + (getTrain() ? getTrain().total : 0);
   let food = 0, act = 0;
   ['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].forEach(k=>{
     const fk = foodKeyFor(k);
@@ -875,13 +876,14 @@ function renderSummary(){
   const grid=document.createElement('div'); grid.className='final-grid';
   const it=computeItinerary();
   const dr=c=>`${fmtD(it.cityDates[c][0])} – ${fmtD(it.cityDates[c][1])}`;
+  const NS='— not picked yet';
   const cards=[
-    {h:'Flights', name:fl.name, meta:fl.route, val:fl.total, step:0},
-    {h:'Stockholm · hotel', name:getHotel('Stockholm').name, meta:state.nights.Stockholm+' nights · '+dr('Stockholm'), val:hotelTotal('Stockholm'), step:1},
-    {h:'Cruise to Helsinki', name:getCruise().name, meta:'overnight ferry · '+fmtD(it.cruiseNight), val:getCruise().total, step:2},
-    {h:'Helsinki · hotel', name:getHotel('Helsinki').name, meta:state.nights.Helsinki+' nights · '+dr('Helsinki'), val:hotelTotal('Helsinki'), step:3},
-    {h:'Train to Lapland', name:getTrain().name, meta:'overnight sleeper · '+fmtD(it.trainNight), val:getTrain().total, step:4},
-    {h:'Lapland · hotel', name:getHotel('Rovaniemi').name, meta:state.nights.Rovaniemi+' nights · '+dr('Rovaniemi'), val:hotelTotal('Rovaniemi'), step:5},
+    {h:'Flights', name:fl?fl.name:NS, meta:fl?fl.route:'tap to choose a flight', val:fl?fl.total:0, step:0},
+    {h:'Stockholm · hotel', name:getHotel('Stockholm')?getHotel('Stockholm').name:NS, meta:state.nights.Stockholm+' nights · '+dr('Stockholm'), val:hotelTotal('Stockholm'), step:1},
+    {h:'Cruise to Helsinki', name:getCruise()?getCruise().name:NS, meta:'overnight ferry · '+fmtD(it.cruiseNight), val:getCruise()?getCruise().total:0, step:2},
+    {h:'Helsinki · hotel', name:getHotel('Helsinki')?getHotel('Helsinki').name:NS, meta:state.nights.Helsinki+' nights · '+dr('Helsinki'), val:hotelTotal('Helsinki'), step:3},
+    {h:'Train to Lapland', name:getTrain()?getTrain().name:NS, meta:'overnight sleeper · '+fmtD(it.trainNight), val:getTrain()?getTrain().total:0, step:4},
+    {h:'Lapland · hotel', name:getHotel('Rovaniemi')?getHotel('Rovaniemi').name:NS, meta:state.nights.Rovaniemi+' nights · '+dr('Rovaniemi'), val:hotelTotal('Rovaniemi'), step:5},
   ];
   cards.forEach(c=>{
     const d=document.createElement('div'); d.className='fcard';
@@ -891,8 +893,10 @@ function renderSummary(){
   });
   // food card + activities card (split)
   const foodCard=document.createElement('div'); foodCard.className='fcard';
-  const splCount=Object.values(state.foodTier).filter(v=>v==='spl').length;
-  foodCard.innerHTML=`<h4>Food · all meals for 5</h4><div class="fname">${splCount===0?'Regular':splCount===5?'Splurge':'Mixed'} dining</div><div class="fmeta">Breakfasts, lunches, dinners & snacks across every segment</div><div class="fval">${money(t.food)}</div>`;
+  const tiers=Object.values(state.foodTier).filter(Boolean);
+  const splCount=tiers.filter(v=>v==='spl').length;
+  const foodName = tiers.length===0 ? '— not picked yet' : (splCount===tiers.length?'Splurge':splCount===0?'Regular':'Mixed')+' dining';
+  foodCard.innerHTML=`<h4>Food · all meals for 5</h4><div class="fname">${foodName}</div><div class="fmeta">Breakfasts, lunches, dinners & snacks across every segment</div><div class="fval">${money(t.food)}</div>`;
   grid.appendChild(foodCard);
   const actCard=document.createElement('div'); actCard.className='fcard';
   const nAct=Object.values(state.act).filter(Boolean).length;
@@ -952,13 +956,14 @@ function renderSidebar(){
   document.getElementById('mbTotal').textContent=money(t.grand);
   document.getElementById('mbPP').textContent=money(t.grand/5)+' / person';
 
+  const NS='— not picked yet';
   const rows=[
-    {name:getFlight().name, sub:'Flights · 5 people', val:getFlight().total, step:0},
-    {name:getHotel('Stockholm').name, sub:'Stockholm · '+state.nights.Stockholm+' nts', val:hotelTotal('Stockholm'), step:1},
-    {name:getCruise().name, sub:'Cruise', val:getCruise().total, step:2},
-    {name:getHotel('Helsinki').name, sub:'Helsinki · '+state.nights.Helsinki+' nts', val:hotelTotal('Helsinki'), step:3},
-    {name:getTrain().name, sub:'Train', val:getTrain().total, step:4},
-    {name:getHotel('Rovaniemi').name, sub:'Lapland · '+state.nights.Rovaniemi+' nts', val:hotelTotal('Rovaniemi'), step:5},
+    {name:getFlight()?getFlight().name:NS, sub:'Flights · 5 people', val:getFlight()?getFlight().total:0, step:0},
+    {name:getHotel('Stockholm')?getHotel('Stockholm').name:NS, sub:'Stockholm · '+state.nights.Stockholm+' nts', val:hotelTotal('Stockholm'), step:1},
+    {name:getCruise()?getCruise().name:NS, sub:'Cruise', val:getCruise()?getCruise().total:0, step:2},
+    {name:getHotel('Helsinki')?getHotel('Helsinki').name:NS, sub:'Helsinki · '+state.nights.Helsinki+' nts', val:hotelTotal('Helsinki'), step:3},
+    {name:getTrain()?getTrain().name:NS, sub:'Train', val:getTrain()?getTrain().total:0, step:4},
+    {name:getHotel('Rovaniemi')?getHotel('Rovaniemi').name:NS, sub:'Lapland · '+state.nights.Rovaniemi+' nts', val:hotelTotal('Rovaniemi'), step:5},
     {name:'Food · all meals', sub:'every segment · 5 people', val:t.food, step:5},
     {name:'Activities', sub:'tours & tickets · 5 people', val:t.act, step:5},
   ];
@@ -973,6 +978,7 @@ function renderSidebar(){
 function shorten(s){ return s.length>34 ? s.slice(0,32)+'…' : s; }
 
 /* ---------- Nav ---------- */
+let lastRenderedStep=-1;
 function render(){
   renderStepper();
   renderTripBar();
@@ -986,7 +992,7 @@ function render(){
   const last = state.step===STEPS.length-1;
   document.getElementById('nextBtn').textContent = last ? 'Done ✓' : 'Next →';
   document.getElementById('mbNext').textContent = last ? 'Done' : 'Next';
-  window.scrollTo({top:0, behavior:'smooth'});
+  if(state.step!==lastRenderedStep){ window.scrollTo({top:0, behavior:'smooth'}); lastRenderedStep=state.step; }  // only jump on step change, not on each selection
 }
 function go(d){ state.step=Math.max(0,Math.min(STEPS.length-1,state.step+d)); render(); }
 
@@ -994,8 +1000,15 @@ document.getElementById('nextBtn').onclick=()=>go(1);
 document.getElementById('prevBtn').onclick=()=>go(-1);
 document.getElementById('mbNext').onclick=()=>go(1);
 document.getElementById('mbPrev').onclick=()=>go(-1);
+function clearAll(){
+  state.flight=null;
+  state.hotels={Stockholm:null, Helsinki:null, Rovaniemi:null};
+  state.cruise=null; state.train=null;
+  for(const k in state.foodTier) state.foodTier[k]=null;
+  initActivities();
+}
 document.getElementById('resetBtn').onclick=()=>{
-  setTripLength('recommended'); applyPreset('balanced'); initActivities();  // clears activities to none
+  setTripLength('recommended'); clearAll();  // back to a blank $0 build
   state.step=0; render();
 };
 document.getElementById('printBtn').onclick=()=>{state.step=STEPS.length-1; render(); setTimeout(()=>window.print(),350);};
