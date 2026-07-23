@@ -222,9 +222,12 @@
   .nc-hint{font-size:12px; font-weight:600; margin-left:auto;}
 
   /* ---------- Flight detail ---------- */
-  .fdetail{margin-top:20px; background:var(--card); border:1px solid var(--line); border-radius:14px;
-    padding:16px 18px; box-shadow:var(--shadow-sm);}
-  .fd-head{font-size:14px; font-weight:800; letter-spacing:-.01em; margin-bottom:12px;}
+  .fdetail{margin-top:-6px; background:linear-gradient(#f5faff,#ffffff);
+    border:1.5px solid var(--brand); border-top:0; border-radius:0 0 14px 14px;
+    padding:13px 16px 15px; box-shadow:var(--shadow-sm); animation:fdslide .18s ease;}
+  @keyframes fdslide{from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;}}
+  .fd-head{font-size:12.5px; font-weight:800; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--brand-deep); margin-bottom:11px;}
   .fd-sum{font-size:13px; color:var(--ink-soft);}
   .fd-day{border:1px solid var(--line-soft); border-radius:12px; padding:12px 13px; margin-bottom:12px; background:#fbfdff;}
   .fd-daytop{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px;}
@@ -243,6 +246,12 @@
     border-left:2px dashed #cdd9e8; margin:2px 0 2px 26px;}
   .fd-arrive{font-size:12.5px; font-weight:700; color:var(--green); margin-top:6px; padding-top:8px; border-top:1px solid var(--line-soft);}
   .fd-footnote{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5;}
+
+  /* ---------- Photo link on hotel cards ---------- */
+  .photolink{display:inline-flex; align-items:center; gap:4px; margin-top:10px; font-size:12.5px;
+    font-weight:700; color:var(--brand); text-decoration:none; background:var(--frost);
+    padding:6px 11px; border-radius:8px; transition:.14s;}
+  .photolink:hover{background:#e0ecfd; color:var(--brand-deep);}
 
   .hide{display:none !important;}
 </style>
@@ -285,7 +294,8 @@
     <div class="sum-foot">
       <div class="sum-mini"><span>Flights</span><span id="miniFlights">$0</span></div>
       <div class="sum-mini"><span>Lodging + overnight transport</span><span id="miniLodging">$0</span></div>
-      <div class="sum-mini"><span>Food + activities</span><span id="miniFA">$0</span></div>
+      <div class="sum-mini"><span>Food · meals</span><span id="miniFood">$0</span></div>
+      <div class="sum-mini"><span>Activities</span><span id="miniAct">$0</span></div>
       <div class="sum-actions">
         <button class="btn btn-ghost" id="resetBtn">Reset</button>
         <button class="btn btn-primary" id="printBtn">Print / PDF</button>
@@ -365,40 +375,41 @@ const DATA = {
     Train:{reg:162, spl:240, nights:1},
     Lapland:{reg:2296, spl:4776, nights:8},
   },
+  // Each activity is a single family price (for 5). Splurge lives on the FOOD side only.
   activities:{
     Stockholm:[
-      {id:'s-vasa', name:'Vasa Museum', detail:'World\'s best-preserved 17th-c. warship · under-18 free', reg:54, spl:54, def:true},
-      {id:'s-skansen', name:'Skansen open-air museum', detail:'Nordic history + zoo · under-15 free', reg:69, spl:69, def:true},
-      {id:'s-juni', name:'Junibacken', detail:'Pippi / story-book children\'s museum', reg:101, spl:101, def:true},
-      {id:'s-djur', name:'Djurgården / archipelago', detail:'Public ferry vs archipelago dinner cruise', reg:80, spl:480, def:true},
-      {id:'s-abba', name:'ABBA Museum', detail:'Interactive music museum', reg:0, spl:101, def:false},
-      {id:'s-grona', name:'Gröna Lund amusement', detail:'Entry + ride wristband', reg:0, spl:248, def:false},
-      {id:'s-foto', name:'Fotografiska', detail:'Photography museum', reg:0, spl:60, def:false},
-      {id:'s-gamla', name:'Gamla Stan private guide', detail:'Self-guided is free; splurge = private family guide', reg:0, spl:180, def:false},
+      {id:'s-vasa', name:'Vasa Museum', detail:'The preserved 1600s warship · kids free', cost:54, def:true},
+      {id:'s-skansen', name:'Skansen open-air museum', detail:'Nordic history village + zoo · kids free', cost:69, def:true},
+      {id:'s-juni', name:'Junibacken', detail:'Pippi Longstocking story-book museum', cost:101, def:true},
+      {id:'s-djur', name:'Djurgården & archipelago', detail:'Island + archipelago by public ferry', cost:80, def:true},
+      {id:'s-abba', name:'ABBA Museum', detail:'Interactive music exhibit', cost:101, def:false},
+      {id:'s-grona', name:'Gröna Lund amusement park', detail:'Entry + ride wristband', cost:248, def:false},
+      {id:'s-foto', name:'Fotografiska', detail:'Photography museum', cost:60, def:false},
+      {id:'s-gamla', name:'Gamla Stan guided walk', detail:'Private family Old-Town guide', cost:180, def:false},
     ],
     Cruise:[
-      {id:'c-sauna', name:'Sauna & spa access (adults)', detail:'Onboard spa', reg:0, spl:60, def:false},
-      {id:'c-arcade', name:'Arcade / games (kids)', detail:'Onboard arcade', reg:0, spl:30, def:false},
+      {id:'c-sauna', name:'Ship spa & sauna (adults)', detail:'Onboard spa access', cost:60, def:false},
+      {id:'c-arcade', name:'Arcade & games (kids)', detail:'Onboard arcade', cost:30, def:false},
     ],
     Helsinki:[
-      {id:'h-suomen', name:'Suomenlinna sea fortress', detail:'HSL ferry (fortress free) vs guided tour', reg:16, spl:130, def:true},
-      {id:'h-linnan', name:'Linnanmäki amusement park', detail:'A few rides vs full ride wristband', reg:96, spl:340, def:true},
-      {id:'h-nathist', name:'Natural History / Sea Life', detail:'Family attraction', reg:74, spl:74, def:true},
-      {id:'h-ateneum', name:'Ateneum / HAM art museum', detail:'Under-18 free', reg:0, spl:66, def:false},
-      {id:'h-loyly', name:'Löyly public sauna', detail:'Iconic Finnish sauna experience', reg:0, spl:75, def:false},
+      {id:'h-suomen', name:'Suomenlinna sea fortress', detail:'Island by HSL ferry · fortress free', cost:16, def:true},
+      {id:'h-linnan', name:'Linnanmäki amusement park', detail:'A few rides', cost:96, def:true},
+      {id:'h-nathist', name:'Natural History / Sea Life', detail:'Museum + aquarium', cost:74, def:true},
+      {id:'h-ateneum', name:'Ateneum / HAM art museum', detail:'Kids free', cost:66, def:false},
+      {id:'h-loyly', name:'Löyly seaside sauna', detail:'Iconic Finnish sauna experience', cost:75, def:false},
     ],
     Train:[],
     Lapland:[
-      {id:'l-santa', name:'Meet Santa Claus photo', detail:'Standard photo vs private meeting', reg:40, spl:150, def:true},
-      {id:'l-post', name:"Santa's Main Post Office", detail:'Letters & postmarks', reg:20, spl:25, def:true},
-      {id:'l-husky', name:'Husky sled safari', detail:'30-min ride vs Northern Lights husky ride', reg:240, spl:760, def:true},
-      {id:'l-reindeer', name:'Reindeer sleigh farm', detail:'Short ride vs farm visit + certificate', reg:120, spl:370, def:true},
-      {id:'l-aurora', name:'Northern Lights aurora tour', detail:'Minibus hunt vs photography / igloo tour', reg:470, spl:760, def:true},
-      {id:'l-snowmob', name:'Snowmobile family safari', detail:'Short session vs full-day wilderness', reg:300, spl:600, def:true},
-      {id:'l-snowcastle', name:'SnowCastle / Arctic ice', detail:'Visit vs ice-restaurant Lappish dinner', reg:75, spl:480, def:false},
-      {id:'l-ranua', name:'Ranua Arctic Wildlife Park', detail:'Day trip · arctic zoo', reg:100, spl:100, def:false},
-      {id:'l-icefish', name:'Ice fishing / snowshoe outing', detail:'Half-day guided', reg:290, spl:470, def:false},
-      {id:'l-arktikum', name:'Arktikum Science Museum', detail:'Rovaniemi science & Sámi culture', reg:78, spl:78, def:true},
+      {id:'l-santa', name:'Meet Santa + photo', detail:'At Santa Claus Village', cost:40, def:true},
+      {id:'l-post', name:"Santa's Main Post Office", detail:'Letters & special postmarks', cost:20, def:true},
+      {id:'l-husky', name:'Husky sled safari', detail:'30-minute ride', cost:240, def:true},
+      {id:'l-reindeer', name:'Reindeer sleigh ride', detail:'At a Sámi reindeer farm', cost:120, def:true},
+      {id:'l-aurora', name:'Northern Lights hunt', detail:'Evening minibus aurora tour', cost:470, def:true},
+      {id:'l-snowmob', name:'Snowmobile family safari', detail:'Short session, kids in sled', cost:300, def:true},
+      {id:'l-snowcastle', name:'SnowCastle / Arctic ice', detail:'Ice sculptures visit', cost:75, def:false},
+      {id:'l-ranua', name:'Ranua Arctic Wildlife Park', detail:'Arctic zoo day trip', cost:100, def:false},
+      {id:'l-icefish', name:'Ice fishing / snowshoe', detail:'Half-day guided outing', cost:290, def:false},
+      {id:'l-arktikum', name:'Arktikum science museum', detail:'Lapland & Sámi culture', cost:78, def:true},
     ],
   },
 };
@@ -451,11 +462,12 @@ const STEPS = [
 
 /* ---------- Trip length presets (nights per location) ---------- */
 const NIGHTS = {
-  full:    {Stockholm:5, Helsinki:3, Rovaniemi:3},   // the original plan · 15 days
-  short:   {Stockholm:3, Helsinki:2, Rovaniemi:3},   // trim the cities, keep Lapland · 12 days
-  lapland: {Stockholm:3, Helsinki:3, Rovaniemi:6},   // shift Stockholm nights into Lapland · 16 days
+  recommended: {Stockholm:3, Helsinki:3, Rovaniemi:5},  // default · 15 days, home Sat + buffer
+  lapland6:    {Stockholm:3, Helsinki:3, Rovaniemi:6},  // max Lapland · 16 days
+  short:       {Stockholm:3, Helsinki:2, Rovaniemi:3},  // quick trip · 12 days
 };
 const NIGHT_MIN=1, NIGHT_MAX=8;
+const PRESET_LABEL={recommended:'Recommended', lapland6:'Max Lapland', short:'Short', custom:'Custom'};
 function detectPreset(){
   for(const k in NIGHTS){ const p=NIGHTS[k];
     if(p.Stockholm===state.nights.Stockholm && p.Helsinki===state.nights.Helsinki && p.Rovaniemi===state.nights.Rovaniemi) return k; }
@@ -468,9 +480,9 @@ function bumpNights(city,delta){
 
 /* ---------- State ---------- */
 const state = {
-  tripLength:'full',
+  tripLength:'recommended',
   departDay:'sat',   // 'fri' = leave Houston Fri Mar 5; 'sat' = Sat Mar 6 (both overnight red-eyes)
-  nights:{Stockholm:5, Helsinki:3, Rovaniemi:3},
+  nights:{Stockholm:3, Helsinki:3, Rovaniemi:5},
   flight:'pe-lon',
   hotels:{Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'},
   cruise:'cru-std',
@@ -490,10 +502,7 @@ const nightsKeyForFood = fk => fk==='Lapland' ? 'Rovaniemi' : fk;
 // init activities
 function initActivities(){
   for(const seg in DATA.activities){
-    DATA.activities[seg].forEach(a=>{
-      state.act[a.id] = a.def;
-      state.actTier[a.id] = 'reg';
-    });
+    DATA.activities[seg].forEach(a=>{ state.act[a.id] = a.def; });
   }
 }
 initActivities();
@@ -536,7 +545,7 @@ function segFoodCost(foodKey){
 function hotelTotal(city){ return getHotel(city).nightly * state.nights[city]; }
 function segActCost(seg){
   const list = DATA.activities[seg]||[]; let t=0;
-  list.forEach(a=>{ if(state.act[a.id]) t += state.actTier[a.id]==='spl' ? a.spl : a.reg; });
+  list.forEach(a=>{ if(state.act[a.id]) t += a.cost; });
   return t;
 }
 function cityFoodActCost(cityKey){
@@ -555,13 +564,15 @@ function computeTotals(){
   const flights = getFlight().total;
   const lodging = hotelTotal('Stockholm') + hotelTotal('Helsinki') + hotelTotal('Rovaniemi')
                 + getCruise().total + getTrain().total;
-  let fa = 0;
+  let food = 0, act = 0;
   ['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].forEach(k=>{
-    if(k==='Cruise'||k==='Train') fa += transportFoodActCost(k);
-    else fa += cityFoodActCost(k);
+    const fk = foodKeyFor(k);
+    food += segFoodCost(fk);
+    act  += segActCost(fk);
   });
+  const fa = food + act;
   const grand = flights + lodging + fa;
-  return {flights, lodging, fa, grand};
+  return {flights, lodging, food, act, fa, grand};
 }
 
 /* ---------- Rendering ---------- */
@@ -576,10 +587,10 @@ function renderTripBar(){
     <div class="tl-left">
       <span class="tl-lbl">Trip length</span>
       <div class="tl-toggle">
-        <button class="${state.tripLength==='full'?'on':''}" data-len="full">Original · 5·3·3</button>
+        <button class="${state.tripLength==='recommended'?'on':''}" data-len="recommended">Recommended · 3·3·5</button>
+        <button class="${state.tripLength==='lapland6'?'on':''}" data-len="lapland6">Max Lapland · 3·3·6</button>
         <button class="${state.tripLength==='short'?'on':''}" data-len="short">Short · 3·2·3</button>
-        <button class="${state.tripLength==='lapland'?'on':''}" data-len="lapland">More Lapland · 3·3·6</button>
-        ${state.tripLength==='custom'?'<button class="on" disabled>Custom mix</button>':''}
+        ${state.tripLength==='custom'?'<button class="on" disabled>Custom</button>':''}
       </div>
     </div>
     <div class="tl-nights">
@@ -590,11 +601,11 @@ function renderTripBar(){
       <span class="nchip">Lapland <b>${n.Rovaniemi} nts</b></span><span class="nsep">=</span>
       <span class="nchip total">${total} nights away</span>
     </div>
-    <div class="tl-note">📅 Depart Houston <b>${fmtD(it.departHou)}</b> → fly home <b>${fmtD(it.flyHome)}</b> · <b style="color:${within?'var(--green)':'#c23a56'}">${it.totalDays} days total${within?' — fits your 18-day max ✓':' — OVER the 18-day max, trim a night!'}</b>. ${
-      state.tripLength==='full' ? 'Original plan — 5 nights Stockholm, 3 Helsinki, 3 Lapland.'
-      : state.tripLength==='short' ? 'Short version — trims the cities, keeps Lapland at 3.'
-      : state.tripLength==='lapland' ? 'More Lapland — moved 2 Stockholm nights into Lapland (6 nights) for better aurora & husky odds; Stockholm 3, Helsinki 3.'
-      : 'Custom mix — use the −/+ on each city to rebalance. Use the presets to snap back.'} <b>Adjust nights on each city step with the −/+ buttons.</b></div>
+    <div class="tl-note">📅 Home <b>${fmtD(it.flyHome)}</b> · <b style="color:${within?'var(--green)':'#c23a56'}">${it.totalDays} days${within?' — fits your 18-day max ✓':' — OVER 18 days, trim a night!'}</b>. ${
+      state.tripLength==='recommended' ? '5 nights in Lapland for aurora & husky time; lands Sat with a buffer day.'
+      : state.tripLength==='lapland6' ? '6 nights in Lapland — max aurora insurance.'
+      : state.tripLength==='short' ? 'Quick trip — trims the cities and Lapland.'
+      : 'Custom mix — tune with the −/+ on each city step.'}</div>
   </div>`;
   bar.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{setTripLength(b.dataset.len); render();});
 }
@@ -625,8 +636,8 @@ function renderFlightDetail(flight){
   const box=document.createElement('div'); box.className='fdetail';
   const it=computeItinerary();
   if(!seg){
-    box.innerHTML=`<div class="fd-head">✈️ ${flight.name} — flight-by-flight</div>
-      <div class="fd-sum">Route: <b>${flight.route}</b>${flight.dur?` · ${flight.dur}`:''}. Detailed departure/arrival times are published for the recommended <b>Premium Economy via London</b> fare — select it to see the full schedule. For this option, exact segment times load closer to travel; reconfirm at booking.</div>`;
+    box.innerHTML=`<div class="fd-head">✈️ Flight-by-flight</div>
+      <div class="fd-sum"><b>${flight.route}</b>${flight.dur?` · ${flight.dur}`:''}. Full segment times are published for the recommended <b>Premium Economy via London</b> fare; exact times for this option firm up closer to travel.</div>`;
     return box;
   }
   const legRows = legs => legs.map(l=>{
@@ -640,21 +651,21 @@ function renderFlightDetail(flight){
       </div>
     </div>`;
   }).join('');
-  box.innerHTML=`<div class="fd-head">✈️ ${flight.name} — flight-by-flight</div>
+  box.innerHTML=`<div class="fd-head">✈️ Flight-by-flight</div>
     <div class="fd-day">
       <div class="fd-daytop"><span class="fd-daylbl">${seg.out.title} · overnight</span><span class="fd-daydate">${fmtD(it.departHou)} → ${fmtD(it.stkIn)}</span></div>
       ${legRows(seg.out.legs)}
       <div class="fd-arrive">${seg.out.arrive} · ${seg.out.total}</div>
-      <div class="fd-footnote">🌙 Red-eye: leave Houston the afternoon of <b>${fmtD(it.departHou)}</b>, sleep across the ocean, land in Stockholm midday <b>${fmtD(it.stkIn)}</b>. Flying east you lose ~7 hours, so the date jumps forward a day.</div>
+      <div class="fd-footnote">🌙 Red-eye — land Stockholm midday the next day (fly east, lose a day).</div>
     </div>
     <div class="fd-day">
       <div class="fd-daytop"><span class="fd-daylbl">${seg.ret.title} · same-day</span><span class="fd-daydate">${fmtD(it.flyHome)}</span></div>
       ${legRows(seg.ret.legs)}
       <div class="fd-arrive">${seg.ret.arrive} · ${seg.ret.total}</div>
-      <div class="fd-footnote">☀️ You leave Lapland in the morning and land in Houston that <b>same evening — ${fmtD(it.flyHome)}</b>. Flying west you gain the hours back, so the calendar date does <b>not</b> move forward. That's your reliable end date.</div>
+      <div class="fd-footnote">☀️ Land Houston the same evening you leave — <b>${fmtD(it.flyHome)}</b>. Fly west, gain the hours back; the date doesn't advance. Your reliable end date.</div>
       ${seg.ret.note?`<div class="fd-footnote">${seg.ret.note}</div>`:''}
     </div>
-    <div class="fd-footnote">Your home date (<b>${fmtD(it.flyHome)}</b>) updates automatically if you change departure day or nights. Fares were quoted for the original Mar 6 / Mar 20 dates — shifting travel days can change the price, so reconfirm at booking.</div>`;
+    <div class="fd-footnote">Home date updates with your choices. Fares quoted for the original dates — reconfirm at booking.</div>`;
   return box;
 }
 
@@ -696,16 +707,16 @@ function renderFlights(){
   stepBody.innerHTML=`<div class="step-head">
     <div class="kicker">Step 1 · Getting there & back</div>
     <h2>✈️ Flights — Houston to Scandinavia and home</h2>
-    <p>Prices are for all 5 of us together, taxes included (real fares checked July 2026 for our 2027 dates). Three seat classes to choose from: <b>Economy</b> = standard seats, cheapest but tight; <b>Premium Economy</b> = wider seats with much more legroom (the value pick — comfortable for the long overnight flights without the Business price); <b>Business</b> = seats that fold into a flat bed for real sleep, but 3× the cost. Some routes go through London, others through Frankfurt — the airline group only matters if you're collecting miles.</p>
+    <p>Prices are for all 5, taxes in. <b>Economy</b> = cheapest, tight. <b>Premium Economy</b> = much more legroom, the value pick. <b>Business</b> = flat-bed sleep, ~3× the price. Select any flight to see its full schedule below it.</p>
   </div>`;
   stepBody.appendChild(renderDepartToggle());
   const grid=document.createElement('div'); grid.className='opt-grid';
   DATA.flights.forEach(f=>{
     grid.appendChild(optCard(state.flight===f.id, f, money(f.total), money(f.pp)+' / person',
       ()=>{state.flight=f.id; render();}));
+    if(state.flight===f.id) grid.appendChild(renderFlightDetail(f));   // expands right under the selected flight
   });
   stepBody.appendChild(grid);
-  stepBody.appendChild(renderFlightDetail(getFlight()));
 }
 
 function renderDepartToggle(){
@@ -720,8 +731,8 @@ function renderDepartToggle(){
   });
   wrap.appendChild(tg);
   const note=document.createElement('div'); note.className='tier-note';
-  note.innerHTML = `You fly out in the afternoon and sleep across the ocean, landing in Stockholm around midday <b>the next day</b> — so leaving <b>${fmtD(it.departHou)}</b> puts you in Stockholm <b>${fmtD(it.stkIn)}</b>. Friday works nicely because it's a night flight: leave after the day, don't burn a daytime. Changing this shifts the whole trip (and your home date) by a day.
-    <br><span style="color:#a5701a">💲 Heads-up: the fare shown was quoted for the original Sat Mar 6 / Sat Mar 20 dates. A Friday departure or shifted return can change the price — on long-haul it's usually a modest difference (Fri/Sun tend to run a little higher than Sat), but it's not a live quote. Re-check exact fares near booking.</span>`;
+  note.innerHTML = `Overnight red-eye: leaving <b>${fmtD(it.departHou)}</b> lands you in Stockholm midday <b>${fmtD(it.stkIn)}</b>. Friday works because you sleep on the plane. Changing this shifts the whole trip by a day.
+    <br><span style="color:#a5701a">💲 Fare was quoted for the original Sat dates — a Friday or shifted date can nudge the price (usually modest on long-haul). Re-check near booking.</span>`;
   wrap.appendChild(note);
   return wrap;
 }
@@ -751,31 +762,19 @@ function renderActivities(segKey){
   const list=DATA.activities[segKey]||[];
   if(!list.length) return null;
   const wrap=document.createElement('div'); wrap.className='subsec';
-  wrap.innerHTML=`<h3>🎟 Activities · tap to include, choose Regular or Splurge</h3>`;
+  const total=segActCost(segKey);
+  wrap.innerHTML=`<h3>🎟 Activities · check what you want · <span style="color:var(--brand-deep)">${money(total)} selected</span></h3>`;
   list.forEach(a=>{
     const on=state.act[a.id];
-    const hasTier = a.reg!==a.spl;
-    const cur = state.actTier[a.id]==='spl' ? a.spl : a.reg;
     const row=document.createElement('div'); row.className='act'+(on?'':' off');
+    row.onclick=()=>{state.act[a.id]=!state.act[a.id]; render();};
     const cb=document.createElement('div'); cb.className='cb'+(on?' on':''); cb.innerHTML=on?'✓':'';
-    cb.onclick=()=>{state.act[a.id]=!state.act[a.id]; render();};
     const main=document.createElement('div'); main.className='act-main';
     main.innerHTML=`<div class="act-name">${a.name}</div><div class="act-detail">${a.detail}</div>`;
-    const right=document.createElement('div'); right.className='act-right';
-    if(hasTier){
-      const mt=document.createElement('div'); mt.className='mini-tier';
-      [['reg','Reg',a.reg],['spl','Splr',a.spl]].forEach(([v,lbl])=>{
-        const b=document.createElement('button'); b.className=state.actTier[a.id]===v?'on':''; b.textContent=lbl;
-        b.onclick=(e)=>{e.stopPropagation(); state.actTier[a.id]=v; if(!state.act[a.id])state.act[a.id]=true; render();};
-        mt.appendChild(b);
-      });
-      right.appendChild(mt);
-    }
     const price=document.createElement('div');
-    price.className='act-price'+(cur===0?' free':'');
-    price.textContent = cur===0 ? 'Free' : money(cur);
-    right.appendChild(price);
-    row.appendChild(cb); row.appendChild(main); row.appendChild(right);
+    price.className='act-price'+(a.cost===0?' free':'');
+    price.textContent = a.cost===0 ? 'Free' : money(a.cost);
+    row.appendChild(cb); row.appendChild(main); row.appendChild(price);
     wrap.appendChild(row);
   });
   return wrap;
@@ -792,10 +791,17 @@ function renderCity(step){
     <p>Prices below already reflect your stay length here (total for the whole family's rooms, not per person). Live booking.com rates, Jul 22 2026. Use −/+ to change nights and watch the total and dates shift.</p>
   </div>`;
   stepBody.appendChild(nightStepper(city));
+  const cityHint = city==='Rovaniemi' ? 'Rovaniemi Lapland' : city;
   const grid=document.createElement('div'); grid.className='opt-grid';
   DATA.hotels[city].forEach(h=>{
-    grid.appendChild(optCard(state.hotels[city]===h.id, h, money(h.nightly*nts),
-      money(h.nightly)+'/night · '+nts+' nts', ()=>{state.hotels[city]=h.id; render();}));
+    const card=optCard(state.hotels[city]===h.id, h, money(h.nightly*nts),
+      money(h.nightly)+'/night · '+nts+' nts', ()=>{state.hotels[city]=h.id; render();});
+    const link=document.createElement('a'); link.className='photolink';
+    link.href='https://www.google.com/search?udm=2&q='+encodeURIComponent(h.name+' '+cityHint+' hotel rooms');
+    link.target='_blank'; link.rel='noopener'; link.innerHTML='📷 See rooms &amp; photos →';
+    link.onclick=e=>e.stopPropagation();
+    card.appendChild(link);
+    grid.appendChild(card);
   });
   stepBody.appendChild(grid);
   stepBody.appendChild(renderTierToggle(city, foodKey));
@@ -832,7 +838,7 @@ function renderSummary(){
   const fl=getFlight();
   const itH=computeItinerary();
   stepBody.innerHTML=`<div class="step-head">
-    <div class="kicker">Step 7 · ${state.tripLength==='full'?'Full':'Short'} trip · ${fmtD(itH.departHou)} – ${fmtD(itH.buffer)} · ${itH.totalDays} days${itH.totalDays<=MAX_DAYS?' (within 18-day max)':''}</div>
+    <div class="kicker">Step 7 · ${PRESET_LABEL[state.tripLength]} · ${fmtD(itH.departHou)} – ${fmtD(itH.buffer)} · ${itH.totalDays} days${itH.totalDays<=MAX_DAYS?' (within 18-day max)':''}</div>
     <h2>📋 Trip Summary</h2>
     <p>Everything you've selected, priced for the family of 5. Use Full/Short at the top to compare, tap a card to jump back, or use a preset below.</p>
   </div>`;
@@ -863,14 +869,15 @@ function renderSummary(){
     d.style.cursor='pointer'; d.onclick=()=>{state.step=c.step; render();};
     grid.appendChild(d);
   });
-  // food & activities card
-  const fad=document.createElement('div'); fad.className='fcard';
-  const perSeg=['Stockholm','Cruise','Helsinki','Train','Rovaniemi'].map(k=>{
-    const v = (k==='Cruise'||k==='Train')?transportFoodActCost(k):cityFoodActCost(k);
-    return `${k==='Rovaniemi'?'Lapland':k}: ${money(v)}`;
-  }).join(' · ');
-  fad.innerHTML=`<h4>Food &amp; activities · all segments</h4><div class="fname">Meals + tours for 5</div><div class="fmeta">${perSeg}</div><div class="fval">${money(t.fa)}</div>`;
-  grid.appendChild(fad);
+  // food card + activities card (split)
+  const foodCard=document.createElement('div'); foodCard.className='fcard';
+  const splCount=Object.values(state.foodTier).filter(v=>v==='spl').length;
+  foodCard.innerHTML=`<h4>Food · all meals for 5</h4><div class="fname">${splCount===0?'Regular':splCount===5?'Splurge':'Mixed'} dining</div><div class="fmeta">Breakfasts, lunches, dinners & snacks across every segment</div><div class="fval">${money(t.food)}</div>`;
+  grid.appendChild(foodCard);
+  const actCard=document.createElement('div'); actCard.className='fcard';
+  const nAct=Object.values(state.act).filter(Boolean).length;
+  actCard.innerHTML=`<h4>Activities · tours & tickets</h4><div class="fname">${nAct} selected</div><div class="fmeta">Museums, tours & experiences for the family</div><div class="fval">${money(t.act)}</div>`;
+  grid.appendChild(actCard);
   stepBody.appendChild(grid);
 
   const grand=document.createElement('div'); grand.className='grand';
@@ -879,9 +886,10 @@ function renderSummary(){
     <div class="g-break">
       <span>Flights <b>${money(t.flights)}</b></span>
       <span>Lodging + transport <b>${money(t.lodging)}</b></span>
-      <span>Food + activities <b>${money(t.fa)}</b></span>
+      <span>Food <b>${money(t.food)}</b></span>
+      <span>Activities <b>${money(t.act)}</b></span>
       <span>Per person <b>${money(t.grand/5)}</b></span>
-      <span>${state.tripLength==='full'?'Full':'Short'} · <b>${totalTripNights()} nights away</b></span>
+      <span>${PRESET_LABEL[state.tripLength]} · <b>${totalTripNights()} nights away</b></span>
     </div>`;
   stepBody.appendChild(grand);
 
@@ -896,19 +904,19 @@ function applyPreset(p){
     state.hotels={Stockholm:'sto-grand', Helsinki:'hel-george', Rovaniemi:'rov-ath1'};
     state.cruise='cru-com'; state.train='trn-ens';
     for(const k in state.foodTier) state.foodTier[k]='spl';
-    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=true; state.actTier[a.id]='spl';});
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=true;});
   }else if(p==='value'){
     state.flight='econ-lon';
     state.hotels={Stockholm:'sto-camper', Helsinki:'hel-clarion', Rovaniemi:'rov-sokos'};
     state.cruise='cru-std'; state.train='trn-std';
     for(const k in state.foodTier) state.foodTier[k]='reg';
-    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def; state.actTier[a.id]='reg';});
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def;});
   }else{ // balanced
     state.flight='pe-lon';
     state.hotels={Stockholm:'sto-sheraton', Helsinki:'hel-u14', Rovaniemi:'rov-apk1'};
     state.cruise='cru-std'; state.train='trn-ens';
     for(const k in state.foodTier) state.foodTier[k]='reg';
-    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def; state.actTier[a.id]='reg';});
+    for(const seg in DATA.activities) DATA.activities[seg].forEach(a=>{state.act[a.id]=a.def;});
   }
 }
 
@@ -919,7 +927,8 @@ function renderSidebar(){
   document.getElementById('sumPP').textContent=money(t.grand/5)+' per person · '+totalTripNights()+' nights away';
   document.getElementById('miniFlights').textContent=money(t.flights);
   document.getElementById('miniLodging').textContent=money(t.lodging);
-  document.getElementById('miniFA').textContent=money(t.fa);
+  document.getElementById('miniFood').textContent=money(t.food);
+  document.getElementById('miniAct').textContent=money(t.act);
   document.getElementById('mbTotal').textContent=money(t.grand);
   document.getElementById('mbPP').textContent=money(t.grand/5)+' / person';
 
@@ -930,7 +939,8 @@ function renderSidebar(){
     {name:getHotel('Helsinki').name, sub:'Helsinki · '+state.nights.Helsinki+' nts', val:hotelTotal('Helsinki'), step:3},
     {name:getTrain().name, sub:'Train', val:getTrain().total, step:4},
     {name:getHotel('Rovaniemi').name, sub:'Lapland · '+state.nights.Rovaniemi+' nts', val:hotelTotal('Rovaniemi'), step:5},
-    {name:'Food & activities', sub:'all segments · 5 people', val:t.fa, step:5},
+    {name:'Food · all meals', sub:'every segment · 5 people', val:t.food, step:5},
+    {name:'Activities', sub:'tours & tickets · 5 people', val:t.act, step:5},
   ];
   const body=document.getElementById('sumBody'); body.innerHTML='';
   rows.forEach(r=>{
@@ -964,7 +974,7 @@ document.getElementById('nextBtn').onclick=()=>go(1);
 document.getElementById('prevBtn').onclick=()=>go(-1);
 document.getElementById('mbNext').onclick=()=>go(1);
 document.getElementById('mbPrev').onclick=()=>go(-1);
-document.getElementById('resetBtn').onclick=()=>{setTripLength('full'); applyPreset('balanced'); state.step=0; render();};
+document.getElementById('resetBtn').onclick=()=>{setTripLength('recommended'); applyPreset('balanced'); state.step=0; render();};
 document.getElementById('printBtn').onclick=()=>{state.step=STEPS.length-1; render(); setTimeout(()=>window.print(),350);};
 
 render();
